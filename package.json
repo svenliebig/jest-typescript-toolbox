@@ -2,7 +2,7 @@
     "name": "jest-typescript-toolbox",
     "displayName": "Jest TypeScript Toolbox",
     "description": "",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "svenliebig",
     "engines": {
         "vscode": "^1.23.0"
@@ -19,21 +19,17 @@
     "main": "./out/extension",
     "contributes": {
         "views": {
-            "jestView": [
-                {
-                    "id": "jestExplorer",
-                    "name": "Explorer"
-                }
-            ]
+            "jestView": [{
+                "id": "jestExplorer",
+                "name": "Explorer"
+            }]
         },
         "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "jestView",
-                    "title": "Jest Tree",
-                    "icon": "assets/jest.svg"
-                }
-            ]
+            "activitybar": [{
+                "id": "jestView",
+                "title": "Jest Tree",
+                "icon": "assets/jest.svg"
+            }]
         }
     },
     "scripts": {
