@@ -4,6 +4,7 @@ import Icons from "../Icons/Icons"
 import NodeBase from "./Nodes/NodeBase"
 import DescribeNode from "./Nodes/DescribeNode"
 import TestNode from "./Nodes/TestNode"
+import RunJestTest from "../JestRunner/Commands/RunJestTest"
 
 export class JestTestFile extends NodeBase {
 	public readonly collapsibleState: vscode.TreeItemCollapsibleState
@@ -49,6 +50,19 @@ export class JestTestFile extends NodeBase {
 	}
 }
 
+export class JestRunNode extends NodeBase {
+	constructor(private fileUrl: string) {
+		super("Diese Tests ausführen")
+	}
+
+	public get properties(): vscode.TreeItem {
+		return {
+			label: this.label,
+			iconPath: Icons.get("play"),
+			command: new RunJestTest(this.fileUrl)
+		}
+	}
+}
 
 export default class JestExplorer implements vscode.TreeDataProvider<NodeBase> {
 	private tree: Array<NodeBase> = []
@@ -75,6 +89,8 @@ export default class JestExplorer implements vscode.TreeDataProvider<NodeBase> {
 	public createTree(file: vscode.TextDocument) {
 		this.clearTree()
 		const jestFile = new JestTestFile(file)
+		const jestRunner = new JestRunNode(file.fileName)
+		this.tree.push(jestRunner)
 		this.tree.push(jestFile)
 		this.refresh()
 	}

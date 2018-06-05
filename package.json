@@ -18,22 +18,22 @@
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [{
-            "command": "extension.sayHello",
-            "title": "Hello World"
-        }],
         "views": {
-            "jestView": [{
-                "id": "jestExplorer",
-                "name": "Explorer"
-            }]
+            "jestView": [
+                {
+                    "id": "jestExplorer",
+                    "name": "Explorer"
+                }
+            ]
         },
         "viewsContainers": {
-            "activitybar": [{
-                "id": "jestView",
-                "title": "Jest Tree",
-                "icon": "assets/jest.svg"
-            }]
+            "activitybar": [
+                {
+                    "id": "jestView",
+                    "title": "Jest Tree",
+                    "icon": "assets/jest.svg"
+                }
+            ]
         }
     },
     "scripts": {
@@ -41,13 +41,19 @@
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        "test": "npm run compile && node ./node_modules/vscode/bin/test",
+        "publish": "vsce publish",
+        "patch": "vsce publish patch",
+        "minor": "vsce publish minor",
+        "major": "vsce publish major"
     },
     "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "tslint": "^5.8.0",
         "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42"
+        "tslint": "^5.8.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6"
+    },
+    "dependencies": {
+        "jest": "^23.1.0"
     }
 }

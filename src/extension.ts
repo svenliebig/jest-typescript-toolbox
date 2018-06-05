@@ -3,6 +3,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode'
 import JestExplorer from './Explorer/JestExplorer'
+import JestRunner from './JestRunner/JestRunner'
 // import JestExplorerProvider from "./Explorer/JestExplorer"
 
 export var jestExplorer: JestExplorer
@@ -30,6 +31,11 @@ export function activate(context: vscode.ExtensionContext) {
                 jestExplorer.createTree(e.document)
             }
         }
+    })
+
+    vscode.commands.registerCommand("jestRunner.runJestTest", (fileUrl: string) => {
+        const runner = new JestRunner(fileUrl)
+        runner.createTestRun()
     })
 
     vscode.commands.registerCommand("jestExplorer.goToLine", (line: number) => {
