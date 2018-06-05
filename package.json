@@ -19,17 +19,21 @@
     "main": "./out/extension",
     "contributes": {
         "views": {
-            "jestView": [{
-                "id": "jestExplorer",
-                "name": "Explorer"
-            }]
+            "jestView": [
+                {
+                    "id": "jestExplorer",
+                    "name": "Explorer"
+                }
+            ]
         },
         "viewsContainers": {
-            "activitybar": [{
-                "id": "jestView",
-                "title": "Jest Tree",
-                "icon": "assets/jest.svg"
-            }]
+            "activitybar": [
+                {
+                    "id": "jestView",
+                    "title": "Jest Tree",
+                    "icon": "assets/jest.svg"
+                }
+            ]
         }
     },
     "scripts": {

@@ -5,7 +5,7 @@ import GoToLine from "../Commands/GoToLine"
 
 export default class TestNode extends NodeBase {
 	constructor(name: string, private line: number) {
-		super(`test: ${name.trim().slice(4, name.trim().length - 10)}`)
+		super(`test: ${name}`)
 	}
 
 	public get properties(): vscode.TreeItem {

@@ -6,6 +6,7 @@ export default class JestRunner {
 	}
 
 	public createTestRun() {
+
 		jest.run(["--rootDir e:\\workspace\\time\\web", this.configArgs, this.fileUrl])
 			.then((e: any) => {
 				console.log(e)

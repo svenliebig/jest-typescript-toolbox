@@ -1,6 +1,8 @@
 import * as vscode from "vscode"
 
 export default class NodeBase {
+	private children: Array<NodeBase> = []
+
 	protected constructor(protected label: string) {
 	}
 
@@ -11,6 +13,10 @@ export default class NodeBase {
 	}
 
 	public getChildren(): Array<NodeBase> {
-		return []
+		return this.children
+	}
+
+	public appendChild(node: NodeBase): void {
+		this.children.push(node)
 	}
 }

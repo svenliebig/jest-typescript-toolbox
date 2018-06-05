@@ -2,22 +2,15 @@ import * as vscode from "vscode"
 import * as path from "path"
 import Icons from "../Icons/Icons"
 import NodeBase from "./Nodes/NodeBase"
-import DescribeNode from "./Nodes/DescribeNode"
-import TestNode from "./Nodes/TestNode"
+import NodeConverter from "./Nodes/NodeConverter"
 import RunJestTest from "../JestRunner/Commands/RunJestTest"
 
 export class JestTestFile extends NodeBase {
 	public readonly collapsibleState: vscode.TreeItemCollapsibleState
-	private children: Array<NodeBase> = []
 
-	constructor(file: vscode.TextDocument) {
-		super(file.fileName.split(path.sep).pop()!)
+	constructor(label: string) {
+		super(label)
 		this.collapsibleState = vscode.TreeItemCollapsibleState.Expanded
-		this.createChildren(file)
-	}
-
-	public getChildren() {
-		return this.children
 	}
 
 	public get properties(): vscode.TreeItem {
@@ -26,27 +19,6 @@ export class JestTestFile extends NodeBase {
 			collapsibleState: this.collapsibleState,
 			iconPath: Icons.get("glass")
 		}
-	}
-
-	private createChildren(file: vscode.TextDocument) {
-		const content = file.getText()
-		const describeAndItRegex = /^[\s]*(describe|it)/i
-		const results = content.split(/\n/).map((value, line) => {
-			if (value) {
-				const result = describeAndItRegex.exec(value)
-				if (result) {
-					if (result[1] === "describe") {
-						return new DescribeNode(result.input, line)
-					}
-
-					if (result[1] === "it") {
-						return new TestNode(result.input, line)
-					}
-				}
-				return null
-			}
-		})
-		this.children = results.filter(e => e) as Array<NodeBase>
 	}
 }
 
@@ -88,10 +60,10 @@ export default class JestExplorer implements vscode.TreeDataProvider<NodeBase> {
 
 	public createTree(file: vscode.TextDocument) {
 		this.clearTree()
-		const jestFile = new JestTestFile(file)
 		const jestRunner = new JestRunNode(file.fileName)
 		this.tree.push(jestRunner)
-		this.tree.push(jestFile)
+		const sourceFile = NodeConverter.textToTypescriptSourceFile(file.getText(), file.fileName.split(path.sep).pop()!)
+		this.tree.push(NodeConverter.typescriptSouceFileToJestNodeTree(sourceFile))
 		this.refresh()
 	}
 
