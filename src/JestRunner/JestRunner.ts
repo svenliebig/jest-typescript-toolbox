@@ -1,93 +1,115 @@
 import PathHelper from "../Utils/PathHelper"
 import * as path from "path"
-// const jest = require("jest")
-import { Runner, ProjectWorkspace } from "jest-editor-support"
+const jest = require("jest")
+// import { Runner, ProjectWorkspace } from "jest-editor-support"
+
+import * as child_process from "child_process"
+
+export class JestProcess {
+	public jsonOutput: boolean = false
+	public showConfig: boolean = false
+
+	constructor(private fileToTest: string) {
+	}
+
+	/**
+	 * For Debug usage only, you can't debug that easily through child processes.
+	 *
+	 * @memberof JestProcess
+	 */
+	startWithJs() {
+		jest.run(this.commandArguments)
+	}
+
+	start(): Promise<any> {
+		return new Promise((resolve, reject) => {
+			// const env = process.env
+			// env["CI"] = true
+			// const cpr = child_process.spawn("node", this.commandArguments, { env })
+
+			// cpr.stdout.on('data', (data: Buffer) => {
+			// 	const stringValue = data.toString().trim();
+			// 	console.log(stringValue)
+			// })
+
+			// cpr.stderr.on('data', (data: Buffer) => {
+			// 	const stringValue = data.toString().trim();
+			// 	console.log(stringValue)
+			// })
+
+			// cpr.on('error', (error: Error) => {
+			// 	const stringValue = error.toString().trim();
+			// 	console.log(stringValue)
+			// })
+
+			// cpr.on('exit', (e) => {
+			// 	console.log(e)
+			// });
+
+			child_process.exec(`${this.executableCommand}`, ((error, stdout, stderr) => {
+				if (error) {
+					resolve(stdout)
+				}
+
+				resolve(stdout)
+			}))
+		})
+	}
+
+	private get executableCommand(): string {
+		let commands = ["node"].concat(this.commandArguments)
+		return commands.join(" ")
+	}
+
+	private get commandArguments(): Array<string> {
+		let commands = [this.jestPath, `-c=${this.packageJson}`, this.relativeFilePath]
+
+		if (this.jsonOutput) {
+			commands.push("--json")
+		}
+		if (this.showConfig) {
+			commands.push("--showConfig")
+		}
+
+		return commands
+	}
+
+	private get relativeFilePath(): string {
+		return "./test/Components/Oldyojio.test.tsx"
+	}
+
+	private get packageJson(): string {
+		return PathHelper.getLastPackageJsonForFile(this.fileToTest)!
+	}
+
+	/**
+	 * Only for windows by now, under a project that was build with the wsl
+	 *
+	 * @readonly
+	 * @private
+	 * @type {string}
+	 * @memberof JestProcess
+	 */
+	private get jestPath(): string {
+		return path.normalize(path.join(__dirname, "..", "..", "node_modules", "jest", "bin", "jest")).replace(/\\/g, "\\\\")
+	}
+}
 
 export default class JestRunner {
 	constructor(private fileUrl: string) {
 	}
 
 	public async createTestRun() {
-		// process.on('unhandledRejection', (err: any) => {
-		// 	throw err;
-		// }); process.env.BABEL_ENV = 'test';
-		// process.env.NODE_ENV = 'test';
-		// process.env.PUBLIC_URL = '';
-		// process.stderr.on("data", (data: any) => {
-		// 	console.log("stderr", data)
-		// })
-		// process.stdout.on("data", (data: any) => {
-		// 	console.log("stdout", data)
-		// })
-		// await jest.run([this.configArgs, this.fileUrl])
-
-		const rootPath = path.normalize(path.join("e:", "workspace", "time", "web"))
-		const pathToJest = path.normalize(path.join(__dirname, "..", "..", "node_modules", ".bin", "jest"))
-		const pathToConfig = PathHelper.getLastPackageJsonForFile(this.fileUrl)!
-		const ws = new ProjectWorkspace(rootPath, pathToJest, pathToConfig, 23)
-
-		const runner = new Runner(ws, {
-			testFileNamePattern: "./test/Components/Oldyojio.test.tsx"
-		})
-
-		let exited = false
-		let keepAliveCounter = 5
-
-		runner.on('executableJSON', (data: any) => {
-			console.log("executableJSON", data)
-		})
-		runner.on('executableOutput', (output: string) => {
-			console.log("executableOutput", output)
-		})
-		runner.on('executableStdErr', (error: Buffer) => console.log("executableStdErr", error))
-		runner.on('nonTerminalError', (error: string) => {
-			console.log("nonTerminalError", error)
-		})
-		runner.on('exception', (result: any) => {
-			console.log("exception", result)
-		})
-		runner.on('terminalError', (error: string) => {
-			console.log("terminalError", error, error.toString())
-		})
-		runner.on('debuggerProcessExit', (e: any) => {
-			console.log(`asdf`, e)
-			if (!exited) {
-				console.log(`doasdf2ne`, e)
-				console.log(`doasdf2ne`, runner)
-				exited = true
-				if (--keepAliveCounter > 0) {
-					runner.removeAllListeners()
-					// this.startRunner()
-				} else {
-					console.log(`done`)
-				}
-			}
-		})
-
-
-
-		try {
-			runner.start()
-		} catch (e) {
-			console.log(e)
-		}
-		// await jest.run([this.configArgs, "./test/Components/Oldyojio.test.tsx", "--json"])
-		// 	.then((e: any) => {
-		// 		console.log("Then")
-		// 		console.log(e)
-		// 	})
-		// 	.catch((e: any) => {
-		// 		console.log("Catch")
-		// 		console.log(e)
-		// 	})
+		const jprocess = new JestProcess(this.fileUrl)
+		jprocess.jsonOutput = true
+		jprocess.start()
+			.then((json) => {
+				console.log(json)
+				const result = JSON.parse(json)
+				console.log(result)
+			})
+			.catch(e => {
+				console.log(e)
+			})
 	}
-
-	// private get configArgs(): string {
-	// 	const configPath = PathHelper.getLastPackageJsonForFile(this.fileUrl)
-	// 	// let configJson = ""
-	// 	// if (configPath) {
-	// 	// 	configJson = fs.readFileSync(configPath, "UTF-8")
-	// 	// }
-	// 	return `-c=${configPath}`
-	// }
 }
