@@ -10,10 +10,11 @@ export default class DescribeNode extends NodeBase {
 
 	public get properties(): vscode.TreeItem {
 		return {
-			label: `${this.line}: ${this.label}`,
+			label: `${this.line + 1}: ${this.label}`,
 			collapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 			iconPath: Icons.get("pencil"),
-			command: new GoToLine(this.line)
+			command: new GoToLine(this.line),
+			contextValue: "jestExplorerDescribeNode"
 		}
 	}
 }

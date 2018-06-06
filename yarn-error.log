@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/bin/node /usr/share/yarn/bin/yarn.js
+  /usr/bin/node /usr/share/yarn/bin/yarn.js add @types/jest-editor-suport
 
 PATH: 
   /home/sven/bin:/home/sven/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/Oracle/Java/javapath_target_2407940062:/mnt/c/Program Files (x86)/Razer Chroma SDK/bin:/mnt/c/Program Files/Razer Chroma SDK/bin:/mnt/c/Windows/System32:/mnt/c/Windows:/mnt/c/Windows/System32/wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0:/mnt/c/Program Files/PuTTY:/mnt/e/programs/node:/mnt/e/programs/yarn/bin:/mnt/c/Users/Sven Liebig/AppData/Local/Microsoft/WindowsApps:/mnt/c/Program Files/Microsoft VS Code/bin:/mnt/c/Users/Sven Liebig/AppData/Roaming/npm:/mnt/c/Users/Sven Liebig/AppData/Local/Yarn/bin:/mnt/e/development/git/cmd:/mnt/e/development/git/mingw64/bin:/mnt/e/development/git/usr/bin:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/e/development/go/bin:/mnt/c/Windows/System32:/mnt/c/Windows:/mnt/c/Windows/System32/wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0:/mnt/c/Windows/System32/OpenSSH:/mnt/e/development/git/bin:/snap/bin
@@ -34,6 +34,21 @@ npm manifest:
       ],
       "main": "./out/extension",
       "contributes": {
+          "commands": [{
+              "command": "jestTypescriptToolbox.reloadTree",
+              "title": "Reload Tree",
+              "category": "jest-typescript-toolbox",
+              "icon": "assets/jest.svg"
+          }],
+          "menus": {
+              "view/item/context": [{
+                  "command": "jestTypescriptToolbox.reloadTree",
+                  "when": "viewItem == jestExplorerDescribeNode"
+              }],
+              "commandPalette": [
+  
+              ]
+          },
           "views": {
               "jestView": [{
                   "id": "jestExplorer",
@@ -3906,4 +3921,14 @@ Lockfile:
       buffer-crc32 "~0.2.3"
 
 Trace: 
-  Error: ENOENT: no such file or directory, scandir '/mnt/e/workspace/jest-toolbox/jest-typescript-toolbox/node_modules/mocha/node_modules/has-flag'
+  Error: https://registry.yarnpkg.com/@types%2fjest-editor-suport: Not found
+      at Request.params.callback [as _callback] (/usr/share/yarn/lib/cli.js:65019:18)
+      at Request.self.callback (/usr/share/yarn/lib/cli.js:132430:22)
+      at Request.emit (events.js:127:13)
+      at Request.<anonymous> (/usr/share/yarn/lib/cli.js:133413:10)
+      at Request.emit (events.js:127:13)
+      at IncomingMessage.<anonymous> (/usr/share/yarn/lib/cli.js:133333:12)
+      at Object.onceWrapper (events.js:219:13)
+      at IncomingMessage.emit (events.js:132:15)
+      at endReadableNT (_stream_readable.js:1101:12)
+      at process._tickCallback (internal/process/next_tick.js:114:19)

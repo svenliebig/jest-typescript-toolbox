@@ -10,7 +10,7 @@ export default class TestNode extends NodeBase {
 
 	public get properties(): vscode.TreeItem {
 		return {
-			label: `${this.line}: ${this.label}`,
+			label: `${this.line + 1}: ${this.label}`,
 			collapsibleState: vscode.TreeItemCollapsibleState.None,
 			iconPath: Icons.get("cogs"),
 			command: new GoToLine(this.line)

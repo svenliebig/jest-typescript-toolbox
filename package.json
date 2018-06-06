@@ -18,6 +18,23 @@
     ],
     "main": "./out/extension",
     "contributes": {
+        "commands": [
+            {
+                "command": "jestTypescriptToolbox.reloadTree",
+                "title": "Reload Tree",
+                "category": "jest-typescript-toolbox",
+                "icon": "assets/jest.svg"
+            }
+        ],
+        "menus": {
+            "view/item/context": [
+                {
+                    "command": "jestTypescriptToolbox.reloadTree",
+                    "when": "viewItem == jestExplorerDescribeNode"
+                }
+            ],
+            "commandPalette": []
+        },
         "views": {
             "jestView": [
                 {
@@ -54,6 +71,8 @@
         "vscode": "^1.1.6"
     },
     "dependencies": {
-        "jest": "^23.1.0"
+        "@types/jest": "^23.0.0",
+        "jest": "^23.1.0",
+        "jest-editor-support": "^23.0.1"
     }
 }

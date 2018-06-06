@@ -62,8 +62,8 @@ export default class JestExplorer implements vscode.TreeDataProvider<NodeBase> {
 		this.clearTree()
 		const jestRunner = new JestRunNode(file.fileName)
 		this.tree.push(jestRunner)
-		const sourceFile = NodeConverter.textToTypescriptSourceFile(file.getText(), file.fileName.split(path.sep).pop()!)
-		this.tree.push(NodeConverter.typescriptSouceFileToJestNodeTree(sourceFile))
+		const converter = new NodeConverter(file.getText(), file.fileName.split(path.sep).pop()!)
+		this.tree.push(converter.createJestNodeTree())
 		this.refresh()
 	}
 
