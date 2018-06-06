@@ -24,7 +24,7 @@ export default class JestRunner {
 		const rootPath = path.normalize(path.join("e:", "workspace", "time", "web"))
 		const pathToJest = path.normalize(path.join(__dirname, "..", "..", "node_modules", ".bin", "jest"))
 		const pathToConfig = PathHelper.getLastPackageJsonForFile(this.fileUrl)!
-		const ws = new ProjectWorkspace(rootPath, "jest", pathToConfig, 23)
+		const ws = new ProjectWorkspace(rootPath, pathToJest, pathToConfig, 23)
 
 		const runner = new Runner(ws, {
 			testFileNamePattern: "./test/Components/Oldyojio.test.tsx"
