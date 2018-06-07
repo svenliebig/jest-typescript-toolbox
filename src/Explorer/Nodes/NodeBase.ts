@@ -3,7 +3,7 @@ import * as vscode from "vscode"
 export default class NodeBase {
 	private children: Array<NodeBase> = []
 
-	protected constructor(protected label: string) {
+	protected constructor(protected label: string, public id: string = "") {
 	}
 
 	public get properties(): vscode.TreeItem {
@@ -18,5 +18,9 @@ export default class NodeBase {
 
 	public appendChild(node: NodeBase): void {
 		this.children.push(node)
+	}
+
+	public hasChildren(): boolean {
+		return this.children.length > 0
 	}
 }

@@ -19,13 +19,16 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.commands.registerCommand("jestRunner.runJestTest", (fileUrl: string) => {
         const runner = new JestRunner(fileUrl)
+        jestExplorer.setTestsRunning(true)
         runner.createTestRun()
             .then((json: TestResultResponse) => {
+                jestExplorer.validateResults(json.testResults)
                 vscode.window.showInformationMessage(`Test Run Complete`, `Failed: ${json.numFailedTests}`, `Passed: ${json.numPassedTests}`)
             })
             .catch((e) => {
                 vscode.window.showErrorMessage("Testrun Failed: ", e)
             })
+            .then(() => jestExplorer.setTestsRunning(false))
     })
 
     vscode.commands.registerCommand("jestExplorer.goToLine", (line: number) => {
