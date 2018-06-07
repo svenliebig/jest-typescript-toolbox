@@ -2,7 +2,7 @@
     "name": "jest-typescript-toolbox",
     "displayName": "Jest TypeScript Toolbox",
     "description": "",
-    "version": "0.0.4",
+    "version": "0.0.8",
     "publisher": "svenliebig",
     "engines": {
         "vscode": "^1.23.0"
@@ -71,9 +71,6 @@
         "vscode": "^1.1.6"
     },
     "dependencies": {
-        "@types/jest": "^23.0.0",
-        "jest": "^23.1.0",
-        "jest-editor-support": "^23.0.1",
-        "ts-jest": "^22.4.6"
+        "jest": "^23.1.0"
     }
 }

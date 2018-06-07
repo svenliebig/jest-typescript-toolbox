@@ -4,12 +4,21 @@ const jest = require("jest")
 // import { Runner, ProjectWorkspace } from "jest-editor-support"
 
 import * as child_process from "child_process"
+import { TestResultResponse } from "../Converter/TestResultConverter"
 
 export class JestProcess {
 	public jsonOutput: boolean = false
 	public showConfig: boolean = false
 
+	private projectRootPath: string
+	private packageJsonPath: string
+	private relativeTestFilePath: string
+
 	constructor(private fileToTest: string) {
+		const packageJson = PathHelper.getLastPackageJsonForFile(this.fileToTest)!
+		this.projectRootPath = packageJson.split("package.json")[0]
+		this.packageJsonPath = packageJson
+		this.relativeTestFilePath = PathHelper.getRelativeFilePathToWorkspaceRoot(this.fileToTest, this.projectRootPath)
 	}
 
 	/**
@@ -71,15 +80,17 @@ export class JestProcess {
 			commands.push("--showConfig")
 		}
 
+		commands.push("--testLocationInResults")
+
 		return commands
 	}
 
 	private get relativeFilePath(): string {
-		return "./test/Components/Oldyojio.test.tsx"
+		return this.relativeTestFilePath
 	}
 
 	private get packageJson(): string {
-		return PathHelper.getLastPackageJsonForFile(this.fileToTest)!
+		return this.packageJsonPath
 	}
 
 	/**
@@ -99,17 +110,18 @@ export default class JestRunner {
 	constructor(private fileUrl: string) {
 	}
 
-	public async createTestRun() {
-		const jprocess = new JestProcess(this.fileUrl)
-		jprocess.jsonOutput = true
-		jprocess.start()
-			.then((json) => {
-				console.log(json)
-				const result = JSON.parse(json)
-				console.log(result)
-			})
-			.catch(e => {
-				console.log(e)
-			})
+	public async createTestRun(): Promise<TestResultResponse> {
+		return new Promise<TestResultResponse>((resolve, reject) => {
+			const jprocess = new JestProcess(this.fileUrl)
+			jprocess.jsonOutput = true
+			jprocess.start()
+				.then((json) => {
+					const result = JSON.parse(json) as TestResultResponse
+					resolve(result)
+				})
+				.catch(e => {
+					reject(e as any)
+				})
+		})
 	}
 }

@@ -7,6 +7,15 @@ export default class PathHelper {
 	constructor() {
 	}
 
+	public static getRelativeFilePathToWorkspaceRoot(fileUrl: string, projectRoot: string): string {
+		let subFolder = fileUrl.split(projectRoot)
+
+		const folder = subFolder[1].replace(/\\/g, "/")
+
+		// "./test/Components/Oldyojio.test.tsx"
+		return `./${folder}`
+	}
+
 	public static getLastPackageJsonForFile(fileUrl: string): string | null {
 		const projectRoot = vscode.workspace.rootPath!
 		let currentRoot = projectRoot

@@ -4,6 +4,7 @@
 import * as vscode from 'vscode'
 import JestExplorer from './Explorer/JestExplorer'
 import JestRunner from './JestRunner/JestRunner'
+import { TestResultResponse } from './Converter/TestResultConverter'
 // import JestExplorerProvider from "./Explorer/JestExplorer"
 
 export var jestExplorer: JestExplorer
@@ -19,6 +20,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("jestRunner.runJestTest", (fileUrl: string) => {
         const runner = new JestRunner(fileUrl)
         runner.createTestRun()
+            .then((json: TestResultResponse) => {
+                vscode.window.showInformationMessage(`Test Run Complete`, `Failed: ${json.numFailedTests}`, `Passed: ${json.numPassedTests}`)
+            })
+            .catch((e) => {
+                vscode.window.showErrorMessage("Testrun Failed: ", e)
+            })
     })
 
     vscode.commands.registerCommand("jestExplorer.goToLine", (line: number) => {

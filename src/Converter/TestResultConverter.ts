@@ -110,7 +110,7 @@ export type TestResultResponse = {
 	startTime: number
 	success: boolean
 	testResults: Array<TestCaseResponse>
-	wasInterrupted
+	wasInterrupted: boolean
 }
 
 export default class TestResultConverter {
