@@ -5,15 +5,16 @@ import GoToLine from "../Commands/GoToLine"
 
 export default class DescribeNode extends NodeBase {
 	constructor(name: string, private line: number) {
-		super(`describe: ${name.trim().slice(10, name.trim().length - 10)}`)
+		super(`describe: ${name}`)
 	}
 
 	public get properties(): vscode.TreeItem {
 		return {
-			label: `${this.line}: ${this.label}`,
-			collapsibleState: vscode.TreeItemCollapsibleState.None,
+			label: `${this.line + 1}: ${this.label}`,
+			collapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 			iconPath: Icons.get("pencil"),
-			command: new GoToLine(this.line)
+			command: new GoToLine(this.line),
+			contextValue: "jestExplorerDescribeNode"
 		}
 	}
 }

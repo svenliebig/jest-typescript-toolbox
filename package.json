@@ -2,7 +2,7 @@
     "name": "jest-typescript-toolbox",
     "displayName": "Jest TypeScript Toolbox",
     "description": "",
-    "version": "0.0.2",
+    "version": "0.0.8",
     "publisher": "svenliebig",
     "engines": {
         "vscode": "^1.23.0"
@@ -20,10 +20,21 @@
     "contributes": {
         "commands": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "command": "jestTypescriptToolbox.reloadTree",
+                "title": "Reload Tree",
+                "category": "jest-typescript-toolbox",
+                "icon": "assets/jest.svg"
             }
         ],
+        "menus": {
+            "view/item/context": [
+                {
+                    "command": "jestTypescriptToolbox.reloadTree",
+                    "when": "viewItem == jestExplorerDescribeNode"
+                }
+            ],
+            "commandPalette": []
+        },
         "views": {
             "jestView": [
                 {
@@ -54,10 +65,12 @@
         "major": "vsce publish major"
     },
     "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "tslint": "^5.8.0",
         "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42"
+        "tslint": "^5.8.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6"
+    },
+    "dependencies": {
+        "jest": "^23.1.0"
     }
 }
