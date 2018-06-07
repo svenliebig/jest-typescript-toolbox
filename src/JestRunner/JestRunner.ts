@@ -30,33 +30,19 @@ export class JestProcess {
 		jest.run(this.commandArguments)
 	}
 
-	start(): Promise<any> {
+	// This has errors on windows when spaces are in the directory path
+	startWithExec(): Promise<any> {
 		return new Promise((resolve, reject) => {
-			// const env = process.env
-			// env["CI"] = true
-			// const cpr = child_process.spawn("node", this.commandArguments, { env })
+			console.log(`creating test run`)
+			console.log(`command`, this.getExecutableCommand(true))
+			console.log(`jestpath`, this.jestPath)
+			console.log(`packageJson`, this.packageJson)
+			console.log(`relativeFilePath`, this.relativeFilePath)
 
-			// cpr.stdout.on('data', (data: Buffer) => {
-			// 	const stringValue = data.toString().trim();
-			// 	console.log(stringValue)
-			// })
-
-			// cpr.stderr.on('data', (data: Buffer) => {
-			// 	const stringValue = data.toString().trim();
-			// 	console.log(stringValue)
-			// })
-
-			// cpr.on('error', (error: Error) => {
-			// 	const stringValue = error.toString().trim();
-			// 	console.log(stringValue)
-			// })
-
-			// cpr.on('exit', (e) => {
-			// 	console.log(e)
-			// });
-
-			child_process.exec(`${this.executableCommand}`, ((error, stdout, stderr) => {
+			child_process.exec(`${this.getExecutableCommand(true)}`, ((error, stdout, stderr) => {
 				if (error) {
+					console.log(`test run error`, error)
+					console.log(`stderr`, stderr)
 					resolve(stdout)
 				}
 
@@ -65,8 +51,37 @@ export class JestProcess {
 		})
 	}
 
-	private get executableCommand(): string {
-		let commands = ["node"].concat(this.commandArguments)
+	startWithSpawn(): Promise<any> {
+		return new Promise((resolve, reject) => {
+			const env = process.env
+			env["CI"] = true
+			const cpr = child_process.spawn("node", this.commandArguments, { env })
+
+			let stdOut = ""
+
+			cpr.stdout.on('data', (data: Buffer) => {
+				const stringValue = data.toString().trim();
+				stdOut += stringValue
+			})
+
+			cpr.stderr.on('data', (data: Buffer) => {
+				const stringValue = data.toString().trim();
+				console.log(`DATA: ${stringValue}`)
+			})
+
+			cpr.on('error', (error: Error) => {
+				const stringValue = error.toString().trim();
+				console.log(`ERR: ${stringValue}`)
+			})
+
+			cpr.on('exit', () => {
+				resolve(stdOut)
+			})
+		})
+	}
+
+	private getExecutableCommand(windowsEscaped: boolean = false): string {
+		let commands = ["node"].concat(windowsEscaped ? this.commandArguments.map(this.escapeWindowsString) : this.commandArguments)
 		return commands.join(" ")
 	}
 
@@ -93,6 +108,18 @@ export class JestProcess {
 		return this.packageJsonPath
 	}
 
+	private escapeWindowsString(str: string): string {
+		return this.escapeWindowsSpaces(this.escapeWindowsBackslashes(str))
+	}
+
+	private escapeWindowsSpaces(str: string): string {
+		return str.replace(/([^`])(\s)/g, (a, b, c) => `${b}\`${c}`)
+	}
+
+	private escapeWindowsBackslashes(str: string): string {
+		return str.replace(/\\/g, "\\\\")
+	}
+
 	/**
 	 * Only for windows by now, under a project that was build with the wsl
 	 *
@@ -102,7 +129,7 @@ export class JestProcess {
 	 * @memberof JestProcess
 	 */
 	private get jestPath(): string {
-		return path.normalize(path.join(__dirname, "..", "..", "node_modules", "jest", "bin", "jest")).replace(/\\/g, "\\\\")
+		return path.normalize(path.join(__dirname, "..", "..", "node_modules", "jest", "bin", "jest"))
 	}
 }
 
@@ -114,8 +141,9 @@ export default class JestRunner {
 		return new Promise<TestResultResponse>((resolve, reject) => {
 			const jprocess = new JestProcess(this.fileUrl)
 			jprocess.jsonOutput = true
-			jprocess.start()
+			jprocess.startWithSpawn()
 				.then((json) => {
+					console.log(json)
 					const result = JSON.parse(json) as TestResultResponse
 					resolve(result)
 				})

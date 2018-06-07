@@ -14,7 +14,7 @@ export default class DescribeNode extends NodeBase {
 			collapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 			iconPath: Icons.get("pencil"),
 			command: new GoToLine(this.line),
-			contextValue: "jestExplorerDescribeNode"
+			contextValue: "jestExplorerDescribeNode",
 		}
 	}
 }

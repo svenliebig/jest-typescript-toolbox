@@ -10,11 +10,31 @@ The target of this extension is to display an outline for jest testfile in types
 
 ## Features
 
-.gitkeep
+### Tree View
+
+Shows a collapsable Tree View of `describes` and `it` blocks as Outline, while in *.test.tsx files.
+
+#### Tree View - Support
+
+- [x] Windows, projects build with WLS
+- [ ] Windows, projects build with Powershell
+- [ ] MacOS
+- [ ] Linux
+
+### Run Tests
+
+Possibility to run the Tests in the current file and get instand feedback about them.
+
+#### Run Tests - Support
+
+- [x] Windows, projects build with WLS
+- [ ] Windows, projects build with Powershell
+- [ ] MacOS
+- [ ] Linux
 
 ## Requirements
 
-.gitkeep
+Your project need a properly formed `tsconfig` file and `package.json`, tested this setup with `ts-jest` and a project that is equal to `typescript-create-react-app`.
 
 ## Extension Settings
 
@@ -23,13 +43,3 @@ The target of this extension is to display an outline for jest testfile in types
 ## Known Issues
 
 .gitkeep
-
-## Release Notes
-
-.gitkeep
-
-### 0.0.1
-
-Creating a simple outline with some icons, triggered when .tsx file are opened
-
------------------------------------------------------------------------------------------------------------
