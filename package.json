@@ -2,16 +2,41 @@
     "name": "jest-typescript-toolbox",
     "displayName": "Jest TypeScript Toolbox",
     "description": "",
-    "version": "0.0.9",
+    "version": "0.0.13",
     "publisher": "svenliebig",
+    "author": {
+        "email": "liebigsv@gmail.com",
+        "name": "Sven Liebig",
+        "url": "http://svenliebig.com"
+    },
+    "bugs": {
+        "url": "https://github.com/Sly321/jest-typescript/issues"
+    },
+    "repository": {
+        "url": "https://github.com/Sly321/jest-typescript-toolbox"
+    },
     "engines": {
         "vscode": "^1.23.0"
     },
     "categories": [
-        "Other"
+        "Other",
+        "Programming Languages",
+        "Debuggers"
     ],
+    "keywords": [
+        "jest",
+        "typescript",
+        "test",
+        "react",
+        "tsx"
+    ],
+    "homepage": "https://github.com/Sly321/jest-typescript",
+    "icon": "assets/logo.png",
+    "galleryBanner": {
+        "color": "#007AC9",
+        "theme": "dark"
+    },
     "activationEvents": [
-        "onCommand:extension.sayHello",
         "onLanguage:typescript",
         "onLanguage:typescriptreact",
         "onView:jestExplorer"
@@ -67,10 +92,10 @@
     "devDependencies": {
         "@types/node": "^7.0.43",
         "tslint": "^5.8.0",
-        "typescript": "^2.6.1",
         "vscode": "^1.1.6"
     },
     "dependencies": {
+        "typescript": "^2.6.1",
         "jest": "^23.1.0"
     }
 }

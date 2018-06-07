@@ -10,10 +10,6 @@ import { TestResultResponse } from './Converter/TestResultConverter'
 export var jestExplorer: JestExplorer
 
 export function activate(context: vscode.ExtensionContext) {
-    let disposable = vscode.commands.registerCommand('extension.sayHello', () => {
-        vscode.window.showInformationMessage('Hello World!');
-    })
-
     jestExplorer = new JestExplorer()
     vscode.window.registerTreeDataProvider('jestExplorer', jestExplorer)
 
@@ -81,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.window.onDidChangeActiveTextEditor(activeEditorListener)
 
-    vscode.commands.registerCommand("jestTypescriptToolbox.reloadTree", () => {
+    let disposable = vscode.commands.registerCommand("jestTypescriptToolbox.reloadTree", () => {
         refreshEditor()
     })
 

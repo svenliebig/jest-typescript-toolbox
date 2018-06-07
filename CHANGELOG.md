@@ -4,4 +4,4 @@ All notable changes to the "jest-typescript-toolbox" extension will be documente
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Unreleased]
-- Initial release
+- Creating an outline tree for jest
