@@ -70,6 +70,12 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.window.onDidChangeActiveTextEditor(activeEditorListener)
 
+    vscode.workspace.onDidSaveTextDocument(e => {
+        if (FileHelper.isTypeScriptTestFile(e)) {
+            jestExplorer.createTree(e)
+        }
+    })
+
     let disposable = vscode.commands.registerCommand("jestTypescriptToolbox.reloadTree", () => {
         refreshEditor()
     })
