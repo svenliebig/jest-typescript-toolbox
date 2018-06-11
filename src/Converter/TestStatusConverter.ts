@@ -11,6 +11,8 @@ export default class TestStatusConverter {
 				return TestStatus.Failed
 			case "skipped":
 				return TestStatus.Skipped
+			case "pending":
+				return TestStatus.Skipped
 			default:
 				return TestStatus.NotExecuted
 		}
