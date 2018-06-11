@@ -2,7 +2,7 @@
     "name": "jest-typescript-toolbox",
     "displayName": "Jest TypeScript Toolbox",
     "description": "",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "publisher": "svenliebig",
     "author": {
         "email": "liebigsv@gmail.com",
@@ -43,39 +43,31 @@
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [
-            {
-                "command": "jestTypescriptToolbox.reloadTree",
-                "title": "Reload Tree",
-                "category": "jest-typescript-toolbox",
-                "icon": "assets/jest.svg"
-            }
-        ],
+        "commands": [{
+            "command": "jestTypescriptToolbox.reloadTree",
+            "title": "Reload Tree",
+            "category": "jest-typescript-toolbox",
+            "icon": "assets/jest.svg"
+        }],
         "menus": {
-            "view/item/context": [
-                {
-                    "command": "jestTypescriptToolbox.reloadTree",
-                    "when": "viewItem == jestExplorerDescribeNode"
-                }
-            ],
+            "view/item/context": [{
+                "command": "jestTypescriptToolbox.reloadTree",
+                "when": "viewItem == jestExplorerDescribeNode"
+            }],
             "commandPalette": []
         },
         "views": {
-            "jestView": [
-                {
-                    "id": "jestExplorer",
-                    "name": "Explorer"
-                }
-            ]
+            "jestView": [{
+                "id": "jestExplorer",
+                "name": "Explorer"
+            }]
         },
         "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "jestView",
-                    "title": "Jest Tree",
-                    "icon": "assets/jest.svg"
-                }
-            ]
+            "activitybar": [{
+                "id": "jestView",
+                "title": "Jest Tree",
+                "icon": "assets/jest.svg"
+            }]
         }
     },
     "scripts": {
