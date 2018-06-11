@@ -1,62 +1,22 @@
-import * as vscode from "vscode"
 import * as path from "path"
-import Icons from "../Icons/Icons"
-import NodeBase from "./Nodes/NodeBase"
-import NodeConverter from "./Nodes/NodeConverter"
-import RunJestTest from "../JestRunner/Commands/RunJestTest"
-import { TestCaseResponse } from "../Converter/TestResultConverter"
-import TestNode, { TestStatus } from "./Nodes/TestNode"
+import * as vscode from "vscode"
+import NodeConverter from "../Converter/NodeConverter"
+import BaseNode from "../Models/BaseNode"
+import RunTestNode from "../Models/RunTestNode"
+import TestResultModel from "../Models/TestResultModel"
+import TestNode from "../Models/TestNode"
 
-export class JestTestFile extends NodeBase {
-	public readonly collapsibleState: vscode.TreeItemCollapsibleState
+export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
+	private tree: Array<BaseNode> = []
 
-	constructor(label: string) {
-		super(label)
-		this.collapsibleState = vscode.TreeItemCollapsibleState.Expanded
+	private _onDidChangeTreeData: vscode.EventEmitter<BaseNode> = new vscode.EventEmitter<BaseNode>()
+	readonly onDidChangeTreeData: vscode.Event<BaseNode> = this._onDidChangeTreeData.event
+
+	public getTreeItem(e: BaseNode): vscode.TreeItem {
+		return { ...e.properties }
 	}
 
-	public get properties(): vscode.TreeItem {
-		return {
-			label: this.label,
-			collapsibleState: this.collapsibleState,
-			iconPath: Icons.get("glass")
-		}
-	}
-}
-
-export class JestRunNode extends NodeBase {
-	public testRunning: boolean
-
-	constructor(private fileUrl: string) {
-		super("Diese Tests ausführen", "jest-test-runner-node")
-		this.testRunning = false
-	}
-
-	public get properties(): vscode.TreeItem {
-		return {
-			label: this.label,
-			iconPath: this.testRunning ? Icons.getGif("pending") : Icons.get("play"),
-			command: this.testRunning ? undefined : new RunJestTest(this.fileUrl)
-		}
-	}
-}
-
-export default class JestExplorer implements vscode.TreeDataProvider<NodeBase> {
-	private tree: Array<NodeBase> = []
-
-	private _onDidChangeTreeData: vscode.EventEmitter<NodeBase> = new vscode.EventEmitter<NodeBase>();
-	readonly onDidChangeTreeData: vscode.Event<NodeBase> = this._onDidChangeTreeData.event;
-
-	constructor() {
-	}
-
-	public getTreeItem(e: NodeBase): vscode.TreeItem {
-		return {
-			...e.properties,
-		}
-	}
-
-	public getChildren(e: NodeBase | undefined): Promise<NodeBase[]> {
+	public getChildren(e: BaseNode | undefined): Promise<BaseNode[]> {
 		if (!e) {
 			return Promise.resolve(this.tree)
 		}
@@ -64,14 +24,14 @@ export default class JestExplorer implements vscode.TreeDataProvider<NodeBase> {
 	}
 
 	public setTestsRunning(value: boolean) {
-		const runnter = this.tree.filter(e => e.id === "jest-test-runner-node")[0] as JestRunNode
+		const runnter = this.tree.filter(e => e.id === "jest-test-runner-node")[0] as RunTestNode
 		runnter.testRunning = value
 		this.refresh()
 	}
 
 	public createTree(file: vscode.TextDocument) {
 		this.clearTree()
-		const jestRunner = new JestRunNode(file.fileName)
+		const jestRunner = new RunTestNode(file.fileName)
 		this.tree.push(jestRunner)
 		const converter = new NodeConverter(file.getText(), file.fileName.split(path.sep).pop()!)
 		this.tree.push(converter.createJestNodeTree())
@@ -86,14 +46,14 @@ export default class JestExplorer implements vscode.TreeDataProvider<NodeBase> {
 		this.tree = []
 	}
 
-	private findChildrenWithId(node: NodeBase, id: string): NodeBase | null {
+	private findChildrenWithId(node: BaseNode, id: string): BaseNode | null {
 		if (node.id === id) {
 			return node
 		}
 
 		if (node.hasChildren()) {
 			const children = node.getChildren()
-			let child: NodeBase | null = null
+			let child: BaseNode | null = null
 			children.forEach((it) => {
 				if (!child) {
 					child = this.findChildrenWithId(it, id)
@@ -105,30 +65,43 @@ export default class JestExplorer implements vscode.TreeDataProvider<NodeBase> {
 		return null
 	}
 
-	public validateResults(results: Array<TestCaseResponse>): any {
-		results.forEach(result => {
-			if (result.assertionResults !== null) {
-				result.assertionResults.forEach(assertion => {
-					if (assertion.location !== null) {
-						const testNode = this.findChildrenWithId(this.tree[1], `test-node-${assertion.location.line - 1}`) as TestNode
+	public validateResults(result: TestResultModel): any {
+		result.suites.forEach(testSuite => {
+			const runTestNode = this.tree[0] as RunTestNode
 
-						if (testNode) {
-							switch (assertion.status) {
-								case "failed":
-									testNode.setStatus(TestStatus.Failed)
-									break;
-								case "passed":
-									testNode.setStatus(TestStatus.Passed)
-									break;
-								default:
-									testNode.setStatus(TestStatus.NotExecuted)
-									break;
-							}
-
-						}
-					}
-				})
+			if (runTestNode) {
+				runTestNode.setDuration(testSuite.duration)
 			}
+
+			testSuite.assertions.forEach(assertion => {
+				const testNode = this.findChildrenWithId(this.tree[1], `test-node-${assertion.line}`) as TestNode
+				if (testNode) {
+					testNode.setStatus(assertion.status)
+					testNode.setTooltip(assertion.message)
+				}
+			})
+
+			// if (result.assertionResults !== null) {
+			// 	result.assertionResults.forEach(assertion => {
+			// 		if (assertion.location !== null) {
+			// 			const testNode = this.findChildrenWithId(this.tree[1], `test-node-${assertion.location.line - 1}`) as TestNode
+
+			// 			if (testNode) {
+			// 				switch (assertion.status) {
+			// 					case "failed":
+			// 						testNode.setStatus(TestStatus.Failed)
+			// 						break;
+			// 					case "passed":
+			// 						testNode.setStatus(TestStatus.Passed)
+			// 						break;
+			// 					default:
+			// 						testNode.setStatus(TestStatus.NotExecuted)
+			// 						break;
+			// 				}
+			// 			}
+			// 		}
+			// 	})
+			// }
 		})
 	}
 }

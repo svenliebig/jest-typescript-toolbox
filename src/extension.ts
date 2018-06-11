@@ -4,7 +4,10 @@
 import * as vscode from 'vscode'
 import JestExplorer from './Explorer/JestExplorer'
 import JestRunner from './JestRunner/JestRunner'
-import { TestResultResponse } from './Converter/TestResultConverter'
+import FileHelper from './Utils/FileHelper'
+import TestResultConverter from './Converter/TestResultConverter'
+import { Commands } from "./Commands"
+import { TestResultResponse } from './Models/ResponseDeclarations'
 // import JestExplorerProvider from "./Explorer/JestExplorer"
 
 export var jestExplorer: JestExplorer
@@ -13,13 +16,14 @@ export function activate(context: vscode.ExtensionContext) {
     jestExplorer = new JestExplorer()
     vscode.window.registerTreeDataProvider('jestExplorer', jestExplorer)
 
-    vscode.commands.registerCommand("jestRunner.runJestTest", (fileUrl: string) => {
+    vscode.commands.registerCommand(Commands.RunJestTest, (fileUrl: string) => {
         const runner = new JestRunner(fileUrl)
         jestExplorer.setTestsRunning(true)
-        runner.createTestRun()
+        runner.run()
             .then((json: TestResultResponse) => {
-                jestExplorer.validateResults(json.testResults)
-                vscode.window.showInformationMessage(`Test Run Complete`, `Failed: ${json.numFailedTests}`, `Passed: ${json.numPassedTests}`)
+                const results = TestResultConverter.reponseToModel(json)
+                jestExplorer.validateResults(results)
+                // vscode.window.showInformationMessage(`Test Run Complete`, `Failed: ${json.numFailedTests}`, `Passed: ${json.numPassedTests}`)
             })
             .catch((e) => {
                 vscode.window.showErrorMessage("Testrun Failed: ", e)
@@ -27,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
             .then(() => jestExplorer.setTestsRunning(false))
     })
 
-    vscode.commands.registerCommand("jestExplorer.goToLine", (line: number) => {
+    vscode.commands.registerCommand(Commands.GoToLine, (line: number) => {
         const editor = vscode.window.activeTextEditor
         if (editor) {
             const posStart = new vscode.Position(line, 0)
@@ -40,6 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
                 const { start, end } = editor.visibleRanges[0]
                 offset = parseInt(((end.line - start.line) / 2).toFixed(0))
             }
+
             const viewStartPosition = new vscode.Position(line - offset > 0 ? line - offset : 0, 0)
             const viewEndPosition = new vscode.Position(line + offset, 0)
             const range = new vscode.Range(viewStartPosition, viewEndPosition)
@@ -47,21 +52,9 @@ export function activate(context: vscode.ExtensionContext) {
         }
     })
 
-    const isTypeScriptTestFile = (doc: vscode.TextDocument): boolean => {
-        const { languageId, fileName } = doc
-        if (languageId === "typescriptreact" || languageId === "typescript") {
-            const regex = new RegExp("(/__tests__/.*|(\\.|/)(test|spec))\\.(tsx?)$")
-            const result = regex.exec(fileName)
-            if (result) {
-                return true
-            }
-        }
-        return false
-    }
-
     const activeEditorListener = (e: vscode.TextEditor | undefined) => {
         if (e) {
-            if (isTypeScriptTestFile(e.document)) {
+            if (FileHelper.isTypeScriptTestFile(e.document)) {
                 jestExplorer.createTree(e.document)
             } else {
                 jestExplorer.clearTree()

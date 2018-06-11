@@ -1,9 +1,8 @@
 import * as vscode from "vscode"
-import NodeBase from "./NodeBase"
-import Icons from "../../Icons/Icons"
+import BaseNode from "./BaseNode"
 import GoToLine from "../Commands/GoToLine"
 
-export default class DescribeNode extends NodeBase {
+export default class DescribeNode extends BaseNode {
 	constructor(name: string, private line: number) {
 		super(`describe: ${name}`)
 	}
@@ -12,7 +11,6 @@ export default class DescribeNode extends NodeBase {
 		return {
 			label: `${this.line + 1}: ${this.label}`,
 			collapsibleState: vscode.TreeItemCollapsibleState.Expanded,
-			iconPath: Icons.get("pencil"),
 			command: new GoToLine(this.line),
 			contextValue: "jestExplorerDescribeNode",
 		}

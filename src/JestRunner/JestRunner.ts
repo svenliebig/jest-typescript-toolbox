@@ -1,10 +1,7 @@
-import PathHelper from "../Utils/PathHelper"
-import * as path from "path"
-const jest = require("jest")
-// import { Runner, ProjectWorkspace } from "jest-editor-support"
-
 import * as child_process from "child_process"
-import { TestResultResponse } from "../Converter/TestResultConverter"
+import * as path from "path"
+import PathHelper from "../Utils/PathHelper"
+import { TestResultResponse } from "../Models/ResponseDeclarations"
 
 export class JestProcess {
 	public jsonOutput: boolean = false
@@ -14,41 +11,13 @@ export class JestProcess {
 	private packageJsonPath: string
 	private relativeTestFilePath: string
 
+	private pathHelper = new PathHelper()
+
 	constructor(private fileToTest: string) {
-		const packageJson = PathHelper.getLastPackageJsonForFile(this.fileToTest)!
+		const packageJson = this.pathHelper.getLastPackageJsonForFile(this.fileToTest)!
 		this.projectRootPath = packageJson.split("package.json")[0]
 		this.packageJsonPath = packageJson
-		this.relativeTestFilePath = PathHelper.getRelativeFilePathToWorkspaceRoot(this.fileToTest, this.projectRootPath)
-	}
-
-	/**
-	 * For Debug usage only, you can't debug that easily through child processes.
-	 *
-	 * @memberof JestProcess
-	 */
-	startWithJs() {
-		jest.run(this.commandArguments)
-	}
-
-	// This has errors on windows when spaces are in the directory path
-	startWithExec(): Promise<any> {
-		return new Promise((resolve, reject) => {
-			console.log(`creating test run`)
-			console.log(`command`, this.getExecutableCommand(true))
-			console.log(`jestpath`, this.jestPath)
-			console.log(`packageJson`, this.packageJson)
-			console.log(`relativeFilePath`, this.relativeFilePath)
-
-			child_process.exec(`${this.getExecutableCommand(true)}`, ((error, stdout, stderr) => {
-				if (error) {
-					console.log(`test run error`, error)
-					console.log(`stderr`, stderr)
-					resolve(stdout)
-				}
-
-				resolve(stdout)
-			}))
-		})
+		this.relativeTestFilePath = this.pathHelper.getRelativeFilePathToWorkspaceRoot(this.fileToTest, this.projectRootPath)
 	}
 
 	startWithSpawn(): Promise<any> {
@@ -80,11 +49,6 @@ export class JestProcess {
 		})
 	}
 
-	private getExecutableCommand(windowsEscaped: boolean = false): string {
-		let commands = ["node"].concat(windowsEscaped ? this.commandArguments.map(this.escapeWindowsString) : this.commandArguments)
-		return commands.join(" ")
-	}
-
 	private get commandArguments(): Array<string> {
 		let commands = [this.jestPath, `-c=${this.packageJson}`, this.relativeFilePath]
 
@@ -108,18 +72,6 @@ export class JestProcess {
 		return this.packageJsonPath
 	}
 
-	private escapeWindowsString(str: string): string {
-		return this.escapeWindowsSpaces(this.escapeWindowsBackslashes(str))
-	}
-
-	private escapeWindowsSpaces(str: string): string {
-		return str.replace(/([^`])(\s)/g, (a, b, c) => `${b}\`${c}`)
-	}
-
-	private escapeWindowsBackslashes(str: string): string {
-		return str.replace(/\\/g, "\\\\")
-	}
-
 	/**
 	 * Only for windows by now, under a project that was build with the wsl
 	 *
@@ -137,11 +89,17 @@ export default class JestRunner {
 	constructor(private fileUrl: string) {
 	}
 
-	public async createTestRun(): Promise<TestResultResponse> {
+	/**
+	 * 
+	 *
+	 * @returns {Promise<TestResultResponse>}
+	 * @memberof JestRunner
+	 */
+	public run(): Promise<TestResultResponse> {
 		return new Promise<TestResultResponse>((resolve, reject) => {
-			const jprocess = new JestProcess(this.fileUrl)
-			jprocess.jsonOutput = true
-			jprocess.startWithSpawn()
+			const jestProcess = new JestProcess(this.fileUrl)
+			jestProcess.jsonOutput = true
+			jestProcess.startWithSpawn()
 				.then((json) => {
 					console.log(json)
 					const result = JSON.parse(json) as TestResultResponse

@@ -1,118 +1,35 @@
-export type TestCaseResponse = {
-	/**
-	 * The Assertion Results of this test case.
-	 *
-	 * @type {Array<AssertionResult>}
-	 */
-	assertionResults: Array<AssertionResult>
-
-	/**
-	 * Unix Timestamp
-	 *
-	 * @type {number}
-	 */
-	endTime: number
-
-	/**
-	 *Complete test message.
-	 *
-	 * @type {string}
-	 */
-	message: string
-
-	/**
-	 * The absolute Path of the file, win example:
-	 * 
-	 * "e:\workspace\time\web\test\Components\Oldyojio.test.tsx"
-	 *
-	 * @type {string}
-	 */
-	name: string
-	/**
-	 * Unix Timestamp
-	 *
-	 * @type {number}
-	 */
-	startTime: number
-
-	status: StatusReponse
-	summary: string
-}
+import TestResultModel from "../Models/TestResultModel"
+import { TestResultResponse } from "../Models/ResponseDeclarations"
+import TestCaseConverter from "./TestCaseConverter"
+import TestCaseModel from "../Models/TestCaseModel"
 
 /**
- * The Status response
  * 
- * @todo lookup the other possible status
+ *
+ * @export
+ * @class TestResultConverter
  */
-export type StatusReponse = "failed" | "passed"
-
-export type AssertionResult = {
-	/**
-	 *
-	 *
-	 * @type {Array}
-	 */
-	ancestorTitles: Array<string>
-
-	/**
-	 * Array with the failed assertions messages.
-	 *
-	 * @type {Array<string>}
-	 */
-	failureMessages: Array<string>
-	/**
-	 * Name of the test (argument of the it function and the parent describe blocks)
-	 *
-	 * @type {string}
-	 */
-	fullName: string
-	location: AssertionLocationResponse,
-	status: StatusReponse
-
-	/**
-	 * Name of the test (only argument of the it, look this.fullName)
-	 *
-	 * @type {string}
-	 */
-	title: string
-}
-
-export type AssertionLocationResponse = {
-	column: number, line: number
-}
-
-export type TestResultResponse = {
-	numFailedTestSuites: number
-	numFailedTests: number
-	numPassedTestSuites: number
-	numPassedTests: number
-	numPendingTestSuites: number
-	numPendingTests: number
-	numRuntimeErrorTestSuites: number
-	numTotalTestSuites: number
-	numTotalTests: number
-	openHandles: Array<any>
-	snapshot: {
-		added: number
-		didUpdate: false
-		failure: false
-		filesAdded: number
-		filesRemoved: number
-		filesUnmatched: number
-		filesUpdated: number
-		matched: number
-		total: number
-		unchecked: number
-		uncheckedKeysByFile: Array<any>
-		unmatched: number
-		updated: number
-	},
-	startTime: number
-	success: boolean
-	testResults: Array<TestCaseResponse>
-	wasInterrupted: boolean
-}
-
 export default class TestResultConverter {
 
+	/**
+	 *
+	 *
+	 * @static
+	 * @param {TestResultResponse} response
+	 * @returns {TestResultModel}
+	 * @memberof TestResultConverter
+	 */
+	public static reponseToModel(response: TestResultResponse): TestResultModel {
+		const passed = response.numPassedTests
+		const failed = response.numFailedTests
+		const total = response.numTotalTests
+		const duration = new Date().getTime() - response.startTime
+
+		let results: Array<TestCaseModel> = []
+		if (Array.isArray(response.testResults)) {
+			results = response.testResults.map(TestCaseConverter.responseToModel)
+		}
+
+		return new TestResultModel(passed, failed, total, duration, results)
+	}
 }

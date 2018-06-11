@@ -2,7 +2,7 @@
     "name": "jest-typescript-toolbox",
     "displayName": "Jest TypeScript Toolbox",
     "description": "",
-    "version": "0.0.18",
+    "version": "1.0.0",
     "publisher": "svenliebig",
     "author": {
         "email": "liebigsv@gmail.com",
@@ -91,11 +91,11 @@
     },
     "devDependencies": {
         "@types/node": "^7.0.43",
-        "tslint": "^5.8.0",
-        "vscode": "^1.1.6"
+        "tslint": "5.10.0",
+        "vscode": "1.1.18"
     },
     "dependencies": {
-        "typescript": "^2.6.1",
+        "typescript": "2.9.1",
         "jest": "^23.1.0"
     }
 }

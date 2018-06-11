@@ -1,8 +1,8 @@
 import * as ts from "typescript"
-import { JestTestFile } from "../JestExplorer"
-import NodeBase from "./NodeBase"
-import DescribeNode from "./DescribeNode"
-import TestNode from "./TestNode"
+import FileNode from "../Models/FileNode"
+import BaseNode from "../Models/BaseNode"
+import DescribeNode from "../Models/DescribeNode"
+import TestNode from "../Models/TestNode"
 
 export default class NodeConverter {
 	private file: ts.SourceFile
@@ -11,13 +11,13 @@ export default class NodeConverter {
 		this.file = ts.createSourceFile(name, text, ts.ScriptTarget.ES2015, true, ts.ScriptKind.TSX)
 	}
 
-	public createJestNodeTree(): NodeBase {
-		const root = new JestTestFile(this.file.fileName)
+	public createJestNodeTree(): BaseNode {
+		const root = new FileNode(this.file.fileName)
 		ts.forEachChild(this.file, child => this.parseNode(child, root))
 		return root
 	}
 
-	public parseNode(node: ts.Node, parent: NodeBase): any {
+	public parseNode(node: ts.Node, parent: BaseNode): any {
 		switch (node.kind) {
 			case ts.SyntaxKind.ExpressionStatement:
 				const expressionStatement: ts.ExpressionStatement = node as ts.ExpressionStatement
@@ -45,7 +45,7 @@ export default class NodeConverter {
 		}
 	}
 
-	private parseCallExpression(callExpression: ts.CallExpression): NodeBase | null {
+	private parseCallExpression(callExpression: ts.CallExpression): BaseNode | null {
 		const expression = callExpression.expression
 		const args = callExpression.arguments
 
@@ -70,22 +70,32 @@ export default class NodeConverter {
 		switch (node.kind) {
 			case ts.SyntaxKind.TemplateExpression:
 				const templateExpression: ts.TemplateExpression = node as ts.TemplateExpression
+				const text = templateExpression.getText()
+				if (text) {
+					return text
+				}
 				return this.parseTemplateSpans(templateExpression.templateSpans)
 			case ts.SyntaxKind.StringLiteral:
 				const stringLiteral: ts.StringLiteral = node as ts.StringLiteral
 				return stringLiteral.text
+			case ts.SyntaxKind.FirstTemplateToken:
+				return (node as any).text
 			default:
 				return "TEXT NOT FOUND"
 		}
 	}
 
-	private parseTemplateSpans(node: ts.NodeArray<ts.Node>): string {
+	private parseTemplateSpans(nodeArray: ts.NodeArray<ts.Node>): string {
 		let text = ""
-		node.forEach(node => {
+
+		nodeArray.forEach(node => {
 			switch (node.kind) {
 				case ts.SyntaxKind.PropertyAccessExpression:
 					const propertyAccessExpression = node as ts.PropertyAccessExpression
-					return this.parsePropertyAccessExpression(propertyAccessExpression.expression)
+					text += this.parsePropertyAccessExpression(propertyAccessExpression.expression)
+				case ts.SyntaxKind.TemplateSpan:
+					const templateSpan = node as ts.TemplateSpan
+					text += this.parseExpression(templateSpan.expression)
 			}
 		})
 
@@ -97,13 +107,17 @@ export default class NodeConverter {
 		return "propery"
 	}
 
-	private parseIdentifier(identifier: ts.Identifier, text: string): NodeBase | null {
+	private parseExpression(exp: ts.Expression) {
+		return exp.getText()
+	}
+
+	private parseIdentifier(identifier: ts.Identifier, text: string): BaseNode | null {
 		const line = this.file.getLineAndCharacterOfPosition(identifier.getStart())
 
 		if (identifier.escapedText === "describe") {
 			return new DescribeNode(text, line.line)
 		}
-		if (identifier.escapedText === "it") {
+		if (identifier.escapedText === "it" || identifier.escapedText === "fit" || identifier.escapedText === "xit") {
 			return new TestNode(text, line.line)
 		}
 		return null

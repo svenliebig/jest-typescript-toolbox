@@ -1,16 +1,13 @@
 import * as vscode from "vscode"
-import NodeBase from "./NodeBase"
-import Icons from "../../Icons/Icons"
+import BaseNode from "./BaseNode"
+import Icons from "../Utils/Icons"
 import GoToLine from "../Commands/GoToLine"
+import TestStatus from "./TestStatus"
 
-export enum TestStatus {
-	NotExecuted,
-	Failed,
-	Passed
-}
-
-export default class TestNode extends NodeBase {
+export default class TestNode extends BaseNode {
 	private status: TestStatus = TestStatus.NotExecuted
+	private tooltip: string | null = null
+	public duration: number | null = null
 
 	constructor(name: string, private line: number) {
 		super(`test: ${name}`, `test-node-${line}`)
@@ -21,22 +18,32 @@ export default class TestNode extends NodeBase {
 			label: `${this.line + 1}: ${this.label}`,
 			collapsibleState: vscode.TreeItemCollapsibleState.None,
 			iconPath: this.icon,
-			command: new GoToLine(this.line)
+			command: new GoToLine(this.line),
+			tooltip: this.tooltip || undefined
 		}
 	}
 
-	private get icon(): string {
+	private get icon(): string | undefined {
 		switch (this.status) {
-			case TestStatus.NotExecuted:
-				return Icons.get("cogs")
 			case TestStatus.Failed:
 				return Icons.get("times")
 			case TestStatus.Passed:
 				return Icons.get("check")
+			case TestStatus.NotExecuted:
+			default:
+				return undefined
 		}
 	}
 
 	public setStatus(arg0: any): any {
 		this.status = arg0
+	}
+
+	public setTooltip(str: string | null): void {
+		this.tooltip = str || null
+	}
+
+	public setDuration(duration: number): void {
+		this.duration = duration
 	}
 }

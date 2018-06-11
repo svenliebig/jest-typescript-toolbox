@@ -1,7 +1,9 @@
 # Change Log
+
 All notable changes to the "jest-typescript-toolbox" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [1.0.0 - 11-06-2018]
 
-## [Unreleased]
-- Creating an outline tree for jest
+- Outline in *.test.tsx files for `describe` and `xit,fit,it` functions
+- Run tests with the Jest Explorer and show results
+- Failed tests messages as tooltips to the failed test nodes
