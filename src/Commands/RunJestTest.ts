@@ -1,5 +1,5 @@
 import * as vscode from "vscode"
-import { Commands } from "."
+import { Commands } from "./index"
 
 export default class RunJestTest implements vscode.Command {
 	title = ""

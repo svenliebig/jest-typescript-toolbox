@@ -1,88 +1,35 @@
-'use strict'
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode'
-import JestExplorer from './Explorer/JestExplorer'
-import JestRunner from './JestRunner/JestRunner'
-import FileHelper from './Utils/FileHelper'
-import TestResultConverter from './Converter/TestResultConverter'
-import { Commands } from "./Commands"
-import { TestResultResponse } from './Models/ResponseDeclarations'
-// import JestExplorerProvider from "./Explorer/JestExplorer"
+import * as vscode from "vscode"
+import Commands from "./Commands"
+import { Commands as CommandsEnum } from "./Commands/index"
+import JestExplorer from "./Explorer/JestExplorer"
+import Listener from "./Listener"
 
-export var jestExplorer: JestExplorer
+export let jestExplorer: JestExplorer
 
 export function activate(context: vscode.ExtensionContext) {
+    // Create the explorer View
     jestExplorer = new JestExplorer()
-    vscode.window.registerTreeDataProvider('jestExplorer', jestExplorer)
 
-    vscode.commands.registerCommand(Commands.RunJestTest, (fileUrl: string) => {
-        const runner = new JestRunner(fileUrl)
-        jestExplorer.setTestsRunning(true)
-        runner.run()
-            .then((json: TestResultResponse) => {
-                const results = TestResultConverter.reponseToModel(json)
-                jestExplorer.validateResults(results)
-                // vscode.window.showInformationMessage(`Test Run Complete`, `Failed: ${json.numFailedTests}`, `Passed: ${json.numPassedTests}`)
-            })
-            .catch((e) => {
-                vscode.window.showErrorMessage("Testrun Failed: ", e)
-            })
-            .then(() => jestExplorer.setTestsRunning(false))
-    })
+    // Disposable, things that will be removed when this extension is disabled
+    context.subscriptions.push(vscode.Disposable.from(
+        // Views
+        vscode.window.registerTreeDataProvider('jestExplorer', jestExplorer),
 
-    vscode.commands.registerCommand(Commands.GoToLine, (line: number) => {
-        const editor = vscode.window.activeTextEditor
-        if (editor) {
-            const posStart = new vscode.Position(line, 0)
-            const posEnd = new vscode.Position(line, 9999)
-            const select = new vscode.Selection(posStart, posEnd)
-            editor.selection = select
+        // Listener
+        vscode.window.onDidChangeActiveTextEditor(Listener.changeActiveTextEditor),
+        vscode.workspace.onDidSaveTextDocument(Listener.saveTextDocument),
 
-            let offset = 0
-            if (editor.visibleRanges.length === 1) {
-                const { start, end } = editor.visibleRanges[0]
-                offset = parseInt(((end.line - start.line) / 2).toFixed(0))
-            }
+        // Commands
+        vscode.commands.registerCommand(CommandsEnum.RunJestTest, Commands.runJestTest),
+        vscode.commands.registerCommand(CommandsEnum.GoToLine, Commands.GoToLine.action),
+        vscode.commands.registerCommand(Commands.ReloadTree.command, Commands.ReloadTree.action),
+        vscode.commands.registerCommand(Commands.FindRelatedTest.command, Commands.FindRelatedTest.action),
+    ))
 
-            const viewStartPosition = new vscode.Position(line - offset > 0 ? line - offset : 0, 0)
-            const viewEndPosition = new vscode.Position(line + offset, 0)
-            const range = new vscode.Range(viewStartPosition, viewEndPosition)
-            editor.revealRange(range)
-        }
-    })
-
-    const activeEditorListener = (e: vscode.TextEditor | undefined) => {
-        if (e) {
-            if (FileHelper.isTypeScriptTestFile(e.document)) {
-                jestExplorer.createTree(e.document)
-            } else {
-                jestExplorer.clearTree()
-                jestExplorer.refresh()
-            }
-        }
-    }
-
-    const refreshEditor = () => {
-        const activeTextEditor = vscode.window.activeTextEditor
-        activeEditorListener(activeTextEditor)
-    }
-
-    vscode.window.onDidChangeActiveTextEditor(activeEditorListener)
-
-    vscode.workspace.onDidSaveTextDocument(e => {
-        if (FileHelper.isTypeScriptTestFile(e)) {
-            jestExplorer.createTree(e)
-        }
-    })
-
-    let disposable = vscode.commands.registerCommand("jestTypescriptToolbox.reloadTree", () => {
-        refreshEditor()
-    })
-
-    context.subscriptions.push(disposable)
-    refreshEditor()
+    // Load initial tree
+    Commands.ReloadTree.action()
 }
 
 export function deactivate() {
+    // nothing to deactivate, everything related is in the context.subscriptions
 }
