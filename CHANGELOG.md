@@ -2,6 +2,12 @@
 
 All notable changes to the "jest-typescript-toolbox" extension will be documented in this file.
 
+## [1.2.0 - 12-06-2018]
+
+- Added Command: Find Related Test, you can open the related test from the implementation file. The name pattern is `myfile.ts` or `myfile.tsx` will find the test in the workspace `myfile.test.ts` or `myfile.test.tsx`
+- Added Feature: The Tree view for the test will load, if you have opened the implementation file and the name pattern is equal to the previously explained `Find Related Test` command
+- Added Feature: You can run the test if you have opened you test file, and use the `keyboard shortcut` that you have added to the `jestRunner.runJestTest` command, you need to add it own you own by `ctrl+shift+p` > `open keyboard shortcuts` and searche for `jestRunner.runJestTest`
+
 ## [1.1.1 - 11-06-2018]
 
 - Fix, for some reason the tough-cookie dependencies did not success in a full install, so psl dependency was missing

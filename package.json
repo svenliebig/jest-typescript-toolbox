@@ -2,7 +2,7 @@
     "name": "jest-typescript-toolbox",
     "displayName": "Jest TypeScript Toolbox",
     "description": "",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "publisher": "svenliebig",
     "author": {
         "email": "liebigsv@gmail.com",
@@ -48,13 +48,24 @@
             "title": "Reload Tree",
             "category": "jest-typescript-toolbox",
             "icon": "assets/jest.svg"
+        }, {
+            "command": "jestTypescriptToolbox.findRelatedTest",
+            "title": "Find related test",
+            "category": "jest-typescript-toolbox",
+            "icon": "assets/jest.svg"
         }],
         "menus": {
             "view/item/context": [{
                 "command": "jestTypescriptToolbox.reloadTree",
                 "when": "viewItem == jestExplorerDescribeNode"
             }],
-            "commandPalette": []
+            "commandPalette": [{
+                "command": "jestTypescriptToolbox.findRelatedTest",
+                "when": "resourceLangId == typescript"
+            }, {
+                "command": "jestTypescriptToolbox.findRelatedTest",
+                "when": "resourceLangId == typescriptreact"
+            }]
         },
         "views": {
             "jestView": [{
@@ -65,7 +76,7 @@
         "viewsContainers": {
             "activitybar": [{
                 "id": "jestView",
-                "title": "Jest Tree",
+                "title": "Jest Typescript Toolbox",
                 "icon": "assets/jest.svg"
             }]
         }

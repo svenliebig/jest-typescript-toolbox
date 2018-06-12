@@ -101,8 +101,9 @@ export default class JestRunner {
 			jestProcess.jsonOutput = true
 			jestProcess.startWithSpawn()
 				.then((json) => {
-					console.log(json)
+					console.log("plain json", json)
 					const result = JSON.parse(json) as TestResultResponse
+					console.log("parsed json", result)
 					resolve(result)
 				})
 				.catch(e => {

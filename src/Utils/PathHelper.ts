@@ -3,12 +3,8 @@ import * as path from "path"
 import * as fs from "fs"
 
 export default class PathHelper {
-	private event = new vscode.EventEmitter<string>()
-
-	private lastPackageJson: string | undefined
-
-	constructor() {
-	}
+	private lastPackageJson: string | null = null
+	private rootFolder: string | null = null
 
 	public getRelativeFilePathToWorkspaceRoot(fileUrl: string, projectRoot: string): string {
 		let subFolder = fileUrl.split(projectRoot)
@@ -16,16 +12,15 @@ export default class PathHelper {
 		return `./${folder}`
 	}
 
-	public getLastPackageJsonForFile(fileUrl: string): string | null {
-		if (this.lastPackageJson) {
-			if (fs.existsSync(this.lastPackageJson)) {
-				return this.lastPackageJson
+	public getRootDirForFile(fileUrl: string): string | null {
+		if (this.rootFolder) {
+			if (fs.existsSync(this.rootFolder)) {
+				return this.rootFolder
 			}
 		}
 
 		const projectRoot = vscode.workspace.rootPath!
 		let currentRoot = projectRoot
-		let lastPackageJson: null | string = null
 
 		let subFolder = fileUrl.split(projectRoot)
 
@@ -38,15 +33,29 @@ export default class PathHelper {
 			const possiblePackageJsonPath = path.join(currentRoot, "package.json")
 			const exists = fs.existsSync(path.join(possiblePackageJsonPath))
 			if (exists) {
-				lastPackageJson = possiblePackageJsonPath
+				this.rootFolder = currentRoot
 			}
 		})
 
-		if (!lastPackageJson) {
-			this.event.fire()
+		return this.rootFolder
+	}
+
+	public getLastPackageJsonForFile(fileUrl: string): string | null {
+		if (this.lastPackageJson) {
+			if (fs.existsSync(this.lastPackageJson)) {
+				return this.lastPackageJson
+			}
 		}
 
-		return lastPackageJson
+		const rootDir = this.getRootDirForFile(fileUrl)
+
+		if (!rootDir) {
+			return null
+		}
+
+		this.lastPackageJson = path.join(rootDir, "package.json")
+		console.log(`last package json`, this.lastPackageJson)
+		return this.lastPackageJson
 	}
 
 	public escapeWindowsString(str: string): string {

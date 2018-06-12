@@ -29,11 +29,11 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 		this.refresh()
 	}
 
-	public createTree(file: vscode.TextDocument) {
+	public createTree(fileText: string, fileName: string) {
 		this.clearTree()
-		const jestRunner = new RunTestNode(file.fileName)
+		const jestRunner = new RunTestNode(fileName)
 		this.tree.push(jestRunner)
-		const converter = new NodeConverter(file.getText(), file.fileName.split(path.sep).pop()!)
+		const converter = new NodeConverter(fileText, fileName.split(path.sep).pop()!)
 		this.tree.push(converter.createJestNodeTree())
 		this.refresh()
 	}
