@@ -3,6 +3,7 @@ import FileNode from "../Models/FileNode"
 import BaseNode from "../Models/BaseNode"
 import DescribeNode from "../Models/DescribeNode"
 import TestNode from "../Models/TestNode"
+import ExcludedTestNode from "../Models/ExcludedTestNode"
 
 export default class NodeConverter {
 	private file: ts.SourceFile
@@ -118,9 +119,10 @@ export default class NodeConverter {
 
 		if (identifier.escapedText === "describe") {
 			return new DescribeNode(text, line.line, this.describeCounter++)
-		}
-		if (identifier.escapedText === "it" || identifier.escapedText === "fit" || identifier.escapedText === "xit") {
+		} else if (identifier.escapedText === "it" || identifier.escapedText === "fit") {
 			return new TestNode(text, line.line, this.testCounter++)
+		} else if (identifier.escapedText === "xit") {
+			return new ExcludedTestNode(text, line.line, this.testCounter++)
 		}
 		return null
 	}

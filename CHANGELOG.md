@@ -2,6 +2,10 @@
 
 All notable changes to the "jest-typescript-toolbox" extension will be documented in this file.
 
+## [1.2.2 - 14-06-2018] ([PR](https://github.com/Sly321/jest-typescript-toolbox/pull/5))
+
+- Separate the `xit` and the `it` test. The `xit` tests have a slighly grey `x` on the treeview as icon
+
 ## [1.2.1 - 13-06-2018] ([PR](https://github.com/Sly321/jest-typescript-toolbox/pull/4))
 
 - Improved tree rerendering:
