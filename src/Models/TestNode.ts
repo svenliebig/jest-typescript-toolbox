@@ -1,29 +1,19 @@
-import * as vscode from "vscode"
-import BaseNode from "./BaseNode"
+import AbstractTestNode from "./AbstractTestNode"
 import Icons from "../Utils/Icons"
-import GoToLine from "../Commands/GoToLine"
 import TestStatus from "./TestStatus"
 
-export default class TestNode extends BaseNode {
+export default class TestNode extends AbstractTestNode {
 	private status: TestStatus = TestStatus.NotExecuted
-	private tooltip: string | null = null
-	public duration: number | null = null
 
 	constructor(name: string, protected line: number, identificator?: number) {
 		super(`test: ${name}`, `it-${name}-${identificator || ""}`)
 	}
 
-	public get properties(): vscode.TreeItem {
-		return {
-			label: `${this.line + 1}: ${this.label}`,
-			collapsibleState: vscode.TreeItemCollapsibleState.None,
-			iconPath: this.icon,
-			command: new GoToLine(this.line),
-			tooltip: this.tooltip || undefined
-		}
+	protected get treeLabel(): string {
+		return `${this.line + 1}: ${this.label}`
 	}
 
-	private get icon(): string | undefined {
+	protected get icon(): string | undefined {
 		switch (this.status) {
 			case TestStatus.Failed:
 				return Icons.get("times")
@@ -37,13 +27,5 @@ export default class TestNode extends BaseNode {
 
 	public setStatus(arg0: any): any {
 		this.status = arg0
-	}
-
-	public setTooltip(str: string | null): void {
-		this.tooltip = str || null
-	}
-
-	public setDuration(duration: number): void {
-		this.duration = duration
 	}
 }
