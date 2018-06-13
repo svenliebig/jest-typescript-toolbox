@@ -9,8 +9,8 @@ export default class TestNode extends BaseNode {
 	private tooltip: string | null = null
 	public duration: number | null = null
 
-	constructor(name: string, private line: number) {
-		super(`test: ${name}`, `test-node-${line}`)
+	constructor(name: string, protected line: number, identificator?: number) {
+		super(`test: ${name}`, `it-${name}-${identificator || ""}`)
 	}
 
 	public get properties(): vscode.TreeItem {

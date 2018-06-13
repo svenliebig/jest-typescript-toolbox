@@ -6,6 +6,11 @@ import RunTestNode from "../Models/RunTestNode"
 import TestResultModel from "../Models/TestResultModel"
 import TestNode from "../Models/TestNode"
 
+export enum TreeChange {
+	Root,
+	Node
+}
+
 export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 	private tree: Array<BaseNode> = []
 
@@ -30,24 +35,28 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 	}
 
 	public createTree(fileText: string, fileName: string) {
-		this.clearTree()
-		const jestRunner = new RunTestNode(fileName)
-		this.tree.push(jestRunner)
 		const converter = new NodeConverter(fileText, fileName.split(path.sep).pop()!)
-		this.tree.push(converter.createJestNodeTree())
+		const tree = converter.createJestNodeTree()
+
+		if (this.tree.length === 2) {
+			if (tree.integrityChain === this.tree[1].integrityChain) {
+				return
+			} else {
+				console.log(`integrityChain did not work`)
+				console.log(this.tree[1].integrityChain)
+				console.log(tree.integrityChain)
+			}
+		}
+
+		const jestRunner = new RunTestNode(fileName)
+		this.clearTree()
+		this.tree.push(jestRunner)
+		this.tree.push(tree)
 		this.refresh()
 	}
 
-	public refresh() {
-		this._onDidChangeTreeData.fire(undefined)
-	}
-
-	public clearTree() {
-		this.tree = []
-	}
-
-	private findChildrenWithId(node: BaseNode, id: string): BaseNode | null {
-		if (node.id === id) {
+	private findChildrenWithLine(node: BaseNode, line: number | null): BaseNode | null {
+		if (node.hasLine(line)) {
 			return node
 		}
 
@@ -56,7 +65,7 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 			let child: BaseNode | null = null
 			children.forEach((it) => {
 				if (!child) {
-					child = this.findChildrenWithId(it, id)
+					child = this.findChildrenWithLine(it, line)
 				}
 			})
 			return child
@@ -74,34 +83,30 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 			}
 
 			testSuite.assertions.forEach(assertion => {
-				const testNode = this.findChildrenWithId(this.tree[1], `test-node-${assertion.line}`) as TestNode
+				const testNode = this.findChildrenWithLine(this.tree[1], assertion.line) as TestNode
 				if (testNode) {
 					testNode.setStatus(assertion.status)
 					testNode.setTooltip(assertion.message)
 				}
 			})
-
-			// if (result.assertionResults !== null) {
-			// 	result.assertionResults.forEach(assertion => {
-			// 		if (assertion.location !== null) {
-			// 			const testNode = this.findChildrenWithId(this.tree[1], `test-node-${assertion.location.line - 1}`) as TestNode
-
-			// 			if (testNode) {
-			// 				switch (assertion.status) {
-			// 					case "failed":
-			// 						testNode.setStatus(TestStatus.Failed)
-			// 						break;
-			// 					case "passed":
-			// 						testNode.setStatus(TestStatus.Passed)
-			// 						break;
-			// 					default:
-			// 						testNode.setStatus(TestStatus.NotExecuted)
-			// 						break;
-			// 				}
-			// 			}
-			// 		}
-			// 	})
-			// }
 		})
+	}
+
+	/**
+	 * Refreshes the hole Tree.
+	 *
+	 * @memberof JestExplorer
+	 */
+	public refresh() {
+		this._onDidChangeTreeData.fire(undefined)
+	}
+
+	/**
+	 * Clears the tree.
+	 *
+	 * @memberof JestExplorer
+	 */
+	public clearTree() {
+		this.tree = []
 	}
 }

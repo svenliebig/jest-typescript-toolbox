@@ -2,6 +2,20 @@
 
 All notable changes to the "jest-typescript-toolbox" extension will be documented in this file.
 
+## [1.2.1 - 13-06-2018]
+
+- Improved tree rerendering ([Pull Request](https://github.com/Sly321/jest-typescript-toolbox/pull/3)):
+  - rerender the tree when:
+    - active edtior file is changed to a different test or not related file
+    - a `describe` name has changed
+    - a `it` name has changed
+    - `it` / `describe` was added
+    - `it` / `describe` was removed
+    - `it` / `describe` position changed it's position before or after another `it` / `describe`
+  - do not rerender when:
+    - only blank line was added or some functions that are not `describe` or `it`
+    - change file to the implementation class of the test
+
 ## [1.2.0 - 12-06-2018]
 
 - Added Command: Find Related Test, you can open the related test from the implementation file. The name pattern is `myfile.ts` or `myfile.tsx` will find the test in the workspace `myfile.test.ts` or `myfile.test.tsx`

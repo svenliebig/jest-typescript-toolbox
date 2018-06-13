@@ -1,4 +1,4 @@
-# jest-typescript-toolbox 1.2.0
+# jest-typescript-toolbox 1.2.1
 
 The target of this extension is to display an outline for jest testfile in typescript context. Future goals are automatic jest runs, result views in the outline and jump to location.
 

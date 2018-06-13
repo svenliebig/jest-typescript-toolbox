@@ -6,6 +6,8 @@ import TestNode from "../Models/TestNode"
 
 export default class NodeConverter {
 	private file: ts.SourceFile
+	private testCounter: number = 0
+	private describeCounter: number = 0
 
 	constructor(text: string, name: string = "f", scriptTarget: ts.ScriptTarget = ts.ScriptTarget.Latest) {
 		this.file = ts.createSourceFile(name, text, ts.ScriptTarget.ES2015, true, ts.ScriptKind.TSX)
@@ -115,10 +117,10 @@ export default class NodeConverter {
 		const line = this.file.getLineAndCharacterOfPosition(identifier.getStart())
 
 		if (identifier.escapedText === "describe") {
-			return new DescribeNode(text, line.line)
+			return new DescribeNode(text, line.line, this.describeCounter++)
 		}
 		if (identifier.escapedText === "it" || identifier.escapedText === "fit" || identifier.escapedText === "xit") {
-			return new TestNode(text, line.line)
+			return new TestNode(text, line.line, this.testCounter++)
 		}
 		return null
 	}
