@@ -2,6 +2,7 @@ import * as vscode from "vscode"
 
 export default class BaseNode {
 	private children: Array<BaseNode> = []
+	protected line?: number
 
 	protected constructor(protected label: string, public id: string = "") {
 	}
@@ -22,5 +23,13 @@ export default class BaseNode {
 
 	public hasChildren(): boolean {
 		return this.children.length > 0
+	}
+
+	public get integrityChain(): string {
+		return `${this.id}-${this.hasChildren() ? this.getChildren().map(e => e.integrityChain).join("_") : ""}`
+	}
+
+	public hasLine(line: number | null) {
+		return this.line === line
 	}
 }

@@ -2,7 +2,21 @@
 
 All notable changes to the "jest-typescript-toolbox" extension will be documented in this file.
 
-## [1.2.0 - 12-06-2018]
+## [1.2.1 - 13-06-2018] ([PR](https://github.com/Sly321/jest-typescript-toolbox/pull/4))
+
+- Improved tree rerendering:
+  - rerender the tree when:
+    - active edtior file is changed to a different test or not related file
+    - a `describe` name has changed
+    - a `it` name has changed
+    - `it` / `describe` was added
+    - `it` / `describe` was removed
+    - `it` / `describe` position changed it's position before or after another `it` / `describe`
+  - do not rerender when:
+    - only blank line was added or some functions that are not `describe` or `it`
+    - change file to the implementation class of the test
+
+## [1.2.0 - 12-06-2018] ([PR](https://github.com/Sly321/jest-typescript-toolbox/pull/3))
 
 - Added Command: Find Related Test, you can open the related test from the implementation file. The name pattern is `myfile.ts` or `myfile.tsx` will find the test in the workspace `myfile.test.ts` or `myfile.test.tsx`
 - Added Feature: The Tree view for the test will load, if you have opened the implementation file and the name pattern is equal to the previously explained `Find Related Test` command
@@ -12,9 +26,9 @@ All notable changes to the "jest-typescript-toolbox" extension will be documente
 
 - Fix, for some reason the tough-cookie dependencies did not success in a full install, so psl dependency was missing
 
-## [1.1.0 - 11-06-2018]
+## [1.1.0 - 11-06-2018] ([PR](https://github.com/Sly321/jest-typescript-toolbox/pull/2))
 
-- Reload the NodeTree on save ([Pull Request](https://github.com/Sly321/jest-typescript-toolbox/pull/2))
+- Reload the NodeTree on save
 
 ## [1.0.0 - 11-06-2018]
 

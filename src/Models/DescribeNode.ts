@@ -3,8 +3,8 @@ import BaseNode from "./BaseNode"
 import GoToLine from "../Commands/GoToLine"
 
 export default class DescribeNode extends BaseNode {
-	constructor(name: string, private line: number) {
-		super(`describe: ${name}`)
+	constructor(name: string, protected line: number, identifier?: number) {
+		super(`describe: ${name}`, `d-${name}-${identifier || ""}`)
 	}
 
 	public get properties(): vscode.TreeItem {
