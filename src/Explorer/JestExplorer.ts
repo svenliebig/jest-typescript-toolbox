@@ -6,11 +6,6 @@ import RunTestNode from "../Models/RunTestNode"
 import TestResultModel from "../Models/TestResultModel"
 import TestNode from "../Models/TestNode"
 
-export enum TreeChange {
-	Root,
-	Node
-}
-
 export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 	private tree: Array<BaseNode> = []
 
