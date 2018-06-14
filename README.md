@@ -50,6 +50,9 @@ Your project need a properly formed `tsconfig` file and `package.json`, tested t
 - [ ] cascading test result, highlight the describe node if a nested test fails (option)
 - [ ] test file templates (?) maybe from snippet template
 - [ ] snapshot, possibility to update on failing snapshots (maybe with context menu)
+- [ ] Open related test in a new window to the left | right | top | bottom
+- [ ] Find related implementation
+- [ ] open test on node click, when current active file is implementation file
 - [ ] show coverage
 
 ## Extension Settings
