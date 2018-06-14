@@ -1,4 +1,4 @@
-# jest-typescript-toolbox 1.2.2
+# jest-typescript-toolbox 1.3.0
 
 The target of this extension is to display an outline for jest testfile in typescript context. Future goals are automatic jest runs, result views in the outline and jump to location.
 
@@ -44,15 +44,15 @@ Your project need a properly formed `tsconfig` file and `package.json`, tested t
 
 ## Future
 
-- [ ] test --watch mode
-- [ ] stop describe nodes from collapsing onclick
+- [x] test --watch mode
 - [ ] when no test file was found, ask to create a new test
+- [ ] open test on node click, when current active file is implementation file
 - [ ] cascading test result, highlight the describe node if a nested test fails (option)
+- [ ] stop describe nodes from collapsing onclick
 - [ ] test file templates (?) maybe from snippet template
 - [ ] snapshot, possibility to update on failing snapshots (maybe with context menu)
 - [ ] Open related test in a new window to the left | right | top | bottom
 - [ ] Find related implementation
-- [ ] open test on node click, when current active file is implementation file
 - [ ] show coverage
 
 ## Extension Settings

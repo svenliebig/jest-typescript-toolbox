@@ -3,6 +3,7 @@ import * as vscode from "vscode"
 import { jestExplorer } from "./extension"
 import FileHelper from "./Utils/FileHelper"
 import TestFinder from "./Utils/TestFinder"
+import Commands from "./Commands"
 
 /**
  * Contains static methods that are used as listeners for this extension
@@ -16,6 +17,9 @@ export default class Listener {
 	public static saveTextDocument(e: vscode.TextDocument) {
 		if (FileHelper.isTypeScriptTestFile(e)) {
 			jestExplorer.createTree(e.getText(), e.fileName)
+			if (jestExplorer.watchMode) {
+				Commands.RunTest.action()
+			}
 		}
 	}
 

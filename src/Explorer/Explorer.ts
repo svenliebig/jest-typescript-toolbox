@@ -4,12 +4,14 @@ import BaseNode from "../Models/BaseNode"
 import FileNode from "../Models/FileNode"
 import RunTestNode from "../Models/RunTestNode"
 import TestNode from "../Models/TestNode"
+import WatchNode from "../Models/WatchNode"
 import TestResultModel from "../Models/TestResultModel"
 
 export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 	private tree: Array<BaseNode> = []
 
 	private runnerNode: RunTestNode = new RunTestNode()
+	private watchNode: WatchNode = new WatchNode()
 	private testTree: FileNode | null = null
 
 	private _onDidChangeTreeData: vscode.EventEmitter<BaseNode> = new vscode.EventEmitter<BaseNode>()
@@ -27,9 +29,22 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 	}
 
 	public setTestsRunning(value: boolean) {
-		const runnter = this.tree.filter(e => e.id === "jest-test-runner-node")[0] as RunTestNode
-		runnter.testRunning = value
+		this.runnerNode.testRunning = value
+		/** @todo after the test run, i can't just refresh the runnerNode, investigate */
 		this.refresh()
+	}
+
+	public get activeTestsRunning(): boolean {
+		return this.runnerNode.testRunning
+	}
+
+	public toggleWatch(): any {
+		this.watchNode.enabled = !this.watchNode.enabled
+		this.refresh(this.watchNode)
+	}
+
+	public get watchMode(): boolean {
+		return this.watchNode.enabled
 	}
 
 	public createTree(fileText: string, filePath: string) {
@@ -54,9 +69,8 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 
 	private buildTree() {
 		if (this.tree.length === 0) {
-			if (this.runnerNode) {
-				this.tree.push(this.runnerNode)
-			}
+			this.tree.push(this.runnerNode)
+			this.tree.push(this.watchNode)
 
 			if (this.testTree) {
 				this.tree.push(this.testTree)
@@ -99,10 +113,11 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 			}
 
 			testSuite.assertions.forEach(assertion => {
-				const testNode = this.findChildrenWithLine(this.tree[1], assertion.line) as TestNode
+				const testNode = this.findChildrenWithLine(this.testTree!, assertion.line) as TestNode
 				if (testNode) {
 					testNode.setStatus(assertion.status)
 					testNode.setTooltip(assertion.message)
+					this.refresh(testNode)
 				}
 			})
 		})
@@ -113,8 +128,8 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 	 *
 	 * @memberof JestExplorer
 	 */
-	public refresh() {
-		this._onDidChangeTreeData.fire(undefined)
+	public refresh(node?: BaseNode) {
+		this._onDidChangeTreeData.fire(node)
 	}
 
 	/**
