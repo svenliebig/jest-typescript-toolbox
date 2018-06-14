@@ -4,18 +4,20 @@ import BaseNode from "../Models/BaseNode"
 import DescribeNode from "../Models/DescribeNode"
 import TestNode from "../Models/TestNode"
 import ExcludedTestNode from "../Models/ExcludedTestNode"
+import FileHelper from "../Utils/FileHelper"
 
 export default class NodeConverter {
 	private file: ts.SourceFile
 	private testCounter: number = 0
 	private describeCounter: number = 0
 
-	constructor(text: string, name: string = "f", scriptTarget: ts.ScriptTarget = ts.ScriptTarget.Latest) {
+	constructor(text: string, public path: string, scriptTarget: ts.ScriptTarget = ts.ScriptTarget.Latest) {
+		const name = FileHelper.getFileName(path)
 		this.file = ts.createSourceFile(name, text, ts.ScriptTarget.ES2015, true, ts.ScriptKind.TSX)
 	}
 
-	public createJestNodeTree(): BaseNode {
-		const root = new FileNode(this.file.fileName)
+	public createJestNodeTree(): FileNode {
+		const root = new FileNode(this.file.fileName, this.path)
 		ts.forEachChild(this.file, child => this.parseNode(child, root))
 		return root
 	}

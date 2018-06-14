@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 import Commands from "./Commands"
 import { Commands as CommandsEnum } from "./Commands/index"
-import JestExplorer from "./Explorer/JestExplorer"
+import JestExplorer from "./Explorer/Explorer"
 import Listener from "./Listener"
 
 export let jestExplorer: JestExplorer
@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidSaveTextDocument(Listener.saveTextDocument),
 
         // Commands
-        vscode.commands.registerCommand(CommandsEnum.RunJestTest, Commands.runJestTest),
+        vscode.commands.registerCommand(Commands.RunTest.command, Commands.RunTest.action),
         vscode.commands.registerCommand(CommandsEnum.GoToLine, Commands.GoToLine.action),
         vscode.commands.registerCommand(Commands.ReloadTree.command, Commands.ReloadTree.action),
         vscode.commands.registerCommand(Commands.FindRelatedTest.command, Commands.FindRelatedTest.action),

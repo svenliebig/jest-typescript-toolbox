@@ -1,13 +1,16 @@
-import * as path from "path"
 import * as vscode from "vscode"
 import NodeConverter from "../Converter/NodeConverter"
 import BaseNode from "../Models/BaseNode"
+import FileNode from "../Models/FileNode"
 import RunTestNode from "../Models/RunTestNode"
-import TestResultModel from "../Models/TestResultModel"
 import TestNode from "../Models/TestNode"
+import TestResultModel from "../Models/TestResultModel"
 
 export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 	private tree: Array<BaseNode> = []
+
+	private runnerNode: RunTestNode = new RunTestNode()
+	private testTree: FileNode | null = null
 
 	private _onDidChangeTreeData: vscode.EventEmitter<BaseNode> = new vscode.EventEmitter<BaseNode>()
 	readonly onDidChangeTreeData: vscode.Event<BaseNode> = this._onDidChangeTreeData.event
@@ -29,8 +32,8 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 		this.refresh()
 	}
 
-	public createTree(fileText: string, fileName: string) {
-		const converter = new NodeConverter(fileText, fileName.split(path.sep).pop()!)
+	public createTree(fileText: string, filePath: string) {
+		const converter = new NodeConverter(fileText, filePath)
 		const tree = converter.createJestNodeTree()
 
 		if (this.tree.length === 2) {
@@ -43,11 +46,22 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 			}
 		}
 
-		const jestRunner = new RunTestNode(fileName)
+		this.testTree = tree
 		this.clearTree()
-		this.tree.push(jestRunner)
-		this.tree.push(tree)
+		this.buildTree()
 		this.refresh()
+	}
+
+	private buildTree() {
+		if (this.tree.length === 0) {
+			if (this.runnerNode) {
+				this.tree.push(this.runnerNode)
+			}
+
+			if (this.testTree) {
+				this.tree.push(this.testTree)
+			}
+		}
 	}
 
 	private findChildrenWithLine(node: BaseNode, line: number | null): BaseNode | null {
@@ -66,6 +80,13 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 			return child
 		}
 
+		return null
+	}
+
+	public get currentTestUrl(): string | null {
+		if (this.testTree) {
+			return this.testTree.path
+		}
 		return null
 	}
 

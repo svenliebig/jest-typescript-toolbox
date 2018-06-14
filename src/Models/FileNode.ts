@@ -11,7 +11,7 @@ import * as vscode from "vscode"
 export default class FileNode extends BaseNode {
 	public readonly collapsibleState: vscode.TreeItemCollapsibleState
 
-	constructor(label: string) {
+	constructor(label: string, public path: string) {
 		super(label, label)
 		this.collapsibleState = vscode.TreeItemCollapsibleState.Expanded
 	}

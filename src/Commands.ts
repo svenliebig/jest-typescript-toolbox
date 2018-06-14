@@ -7,6 +7,46 @@ import FileHelper from "./Utils/FileHelper"
 import TestFinder from "./Utils/TestFinder"
 import Listener from "./Listener"
 
+
+class RunTestCommand implements vscode.Command {
+	public title = "Run Test"
+	public tooltip = ""
+	public command = RunTestCommand.command
+
+	public static get command(): string {
+		return "jestRunner.runJestTest"
+	}
+
+	public static action = () => {
+		let fileUrl = jestExplorer.currentTestUrl
+		if (fileUrl === null) {
+			const editor = vscode.window.activeTextEditor
+			if (editor) {
+				if (FileHelper.isTypeScriptTestFile(editor.document)) {
+					fileUrl = editor.document.fileName
+				} else {
+					return console.error("Current selected file is no .ts or .tsx test file.")
+				}
+			} else {
+				return console.error("No file url and no open editor.")
+			}
+		}
+		const runner = new JestRunner(fileUrl)
+		jestExplorer.setTestsRunning(true)
+		runner.run()
+			.then((json: TestResultResponse) => {
+				const results = TestResultConverter.reponseToModel(json)
+				jestExplorer.validateResults(results)
+				// vscode.window.showInformationMessage(`Test Run Complete`, `Failed: ${json.numFailedTests}`, `Passed: ${json.numPassedTests}`)
+			})
+			.catch((e) => {
+				vscode.window.showErrorMessage("Testrun Failed: ", e)
+			})
+			.then(() => jestExplorer.setTestsRunning(false))
+	}
+}
+
+
 /**
  * Contains static methods that are used as commands for this extension
  * in the [extension.ts](./extension.ts).
@@ -33,32 +73,7 @@ export default class Commands {
 		}
 	}
 
-	public static runJestTest(fileUrl: string | null) {
-		if (fileUrl === null) {
-			const editor = vscode.window.activeTextEditor
-			if (editor) {
-				if (FileHelper.isTypeScriptTestFile(editor.document)) {
-					fileUrl = editor.document.fileName
-				} else {
-					return console.error("Current selected file is no .ts or .tsx test file.")
-				}
-			} else {
-				return console.error("No file url and no open editor.")
-			}
-		}
-		const runner = new JestRunner(fileUrl)
-		jestExplorer.setTestsRunning(true)
-		runner.run()
-			.then((json: TestResultResponse) => {
-				const results = TestResultConverter.reponseToModel(json)
-				jestExplorer.validateResults(results)
-				// vscode.window.showInformationMessage(`Test Run Complete`, `Failed: ${json.numFailedTests}`, `Passed: ${json.numPassedTests}`)
-			})
-			.catch((e) => {
-				vscode.window.showErrorMessage("Testrun Failed: ", e)
-			})
-			.then(() => jestExplorer.setTestsRunning(false))
-	}
+	public static RunTest = RunTestCommand
 
 	public static GoToLine = {
 		action: (line: number) => {
