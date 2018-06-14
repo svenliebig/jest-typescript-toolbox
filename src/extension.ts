@@ -21,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Commands
         vscode.commands.registerCommand(Commands.RunTest.command, Commands.RunTest.action),
+        vscode.commands.registerCommand(Commands.ToggleWatch.command, Commands.ToggleWatch.action),
         vscode.commands.registerCommand(CommandsEnum.GoToLine, Commands.GoToLine.action),
         vscode.commands.registerCommand(Commands.ReloadTree.command, Commands.ReloadTree.action),
         vscode.commands.registerCommand(Commands.FindRelatedTest.command, Commands.FindRelatedTest.action),

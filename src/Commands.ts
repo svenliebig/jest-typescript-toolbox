@@ -9,7 +9,7 @@ import Listener from "./Listener"
 
 
 class RunTestCommand implements vscode.Command {
-	public title = "Run Test"
+	public title = "run test"
 	public tooltip = ""
 	public command = RunTestCommand.command
 
@@ -18,6 +18,10 @@ class RunTestCommand implements vscode.Command {
 	}
 
 	public static action = () => {
+		if (jestExplorer.activeTestsRunning) {
+			return
+		}
+
 		let fileUrl = jestExplorer.currentTestUrl
 		if (fileUrl === null) {
 			const editor = vscode.window.activeTextEditor
@@ -37,12 +41,25 @@ class RunTestCommand implements vscode.Command {
 			.then((json: TestResultResponse) => {
 				const results = TestResultConverter.reponseToModel(json)
 				jestExplorer.validateResults(results)
-				// vscode.window.showInformationMessage(`Test Run Complete`, `Failed: ${json.numFailedTests}`, `Passed: ${json.numPassedTests}`)
 			})
 			.catch((e) => {
 				vscode.window.showErrorMessage("Testrun Failed: ", e)
 			})
 			.then(() => jestExplorer.setTestsRunning(false))
+	}
+}
+
+class ToggleWatch implements vscode.Command {
+	public title = "toggle test watch"
+	public tooltip = ""
+	public command = ToggleWatch.command
+
+	public static get command(): string {
+		return "jestRunner.toggleWatch"
+	}
+
+	public static action = () => {
+		jestExplorer.toggleWatch()
 	}
 }
 
@@ -73,6 +90,7 @@ export default class Commands {
 		}
 	}
 
+	public static ToggleWatch = ToggleWatch
 	public static RunTest = RunTestCommand
 
 	public static GoToLine = {

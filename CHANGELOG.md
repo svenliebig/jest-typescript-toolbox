@@ -2,6 +2,11 @@
 
 All notable changes to the "jest-typescript-toolbox" extension will be documented in this file.
 
+## [1.3.0 - 14-06-2018] ([PR](https://github.com/Sly321/jest-typescript-toolbox/pull/6))
+
+- Watch Mode is now available and can be toggled from the tree view - if enabled, the test will run when the implementation file or the test file is saved
+- Improvements to the tree rendering performance, rather render single nodes if possible
+
 ## [1.2.2 - 14-06-2018] ([PR](https://github.com/Sly321/jest-typescript-toolbox/pull/5))
 
 - Separate the `xit` and the `it` test. The `xit` tests have a slighly grey `x` on the treeview as icon
