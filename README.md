@@ -4,7 +4,7 @@ The target of this extension is to display an outline for jest testfile in types
 
 -----------------------------------------------------------------------------------------------------------
 
-## WORK IN PROGRESS
+![preview](https://raw.githubusercontent.com/Sly321/jest-typescript-toolbox/master/assets/preview.gif)
 
 -----------------------------------------------------------------------------------------------------------
 
@@ -46,8 +46,11 @@ Your project need a properly formed `tsconfig` file and `package.json`, tested t
 
 - [ ] test --watch mode
 - [ ] stop describe nodes from collapsing onclick
-- [ ] show coverage
+- [ ] when no test file was found, ask to create a new test
+- [ ] cascading test result, highlight the describe node if a nested test fails (option)
+- [ ] test file templates (?) maybe from snippet template
 - [ ] snapshot, possibility to update on failing snapshots (maybe with context menu)
+- [ ] show coverage
 
 ## Extension Settings
 
