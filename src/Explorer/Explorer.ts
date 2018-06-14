@@ -51,12 +51,12 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 		const converter = new NodeConverter(fileText, filePath)
 		const tree = converter.createJestNodeTree()
 
-		if (this.tree.length === 2) {
-			if (tree.integrityChain === this.tree[1].integrityChain) {
+		if (this.testTree) {
+			if (tree.integrityChain === this.testTree.integrityChain) {
 				return
 			} else {
 				console.log(`integrityChain did not work`)
-				console.log(this.tree[1].integrityChain)
+				console.log(this.testTree.integrityChain)
 				console.log(tree.integrityChain)
 			}
 		}
