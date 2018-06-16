@@ -2,6 +2,10 @@
 
 All notable changes to the "jest-typescript-toolbox" extension will be documented in this file.
 
+## [1.3.2 - 14-06-2018] ([PR](https://github.com/Sly321/jest-typescript-toolbox/pull/8))
+
+- Extract setStatus to the AbstractTestNode, so when `xit` and `fit` tests will get testLocationResults they can apply a status
+
 ## [1.3.1 - 14-06-2018] ([PR](https://github.com/Sly321/jest-typescript-toolbox/pull/7))
 
 - Tree was reloading when switching between implementation and test file

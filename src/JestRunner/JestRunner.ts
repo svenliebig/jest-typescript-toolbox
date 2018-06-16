@@ -22,7 +22,7 @@ export class JestProcess {
 
 	startWithSpawn(): Promise<any> {
 		return new Promise((resolve, reject) => {
-			const env = process.env
+			const env: any = process.env
 			env["CI"] = true
 			const cpr = child_process.spawn("node", this.commandArguments, { env })
 
