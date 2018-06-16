@@ -3,9 +3,9 @@ import NodeConverter from "../Converter/NodeConverter"
 import BaseNode from "../Models/BaseNode"
 import FileNode from "../Models/FileNode"
 import RunTestNode from "../Models/RunTestNode"
-import TestNode from "../Models/TestNode"
 import WatchNode from "../Models/WatchNode"
 import TestResultModel from "../Models/TestResultModel"
+import AbstractTestNode from "../Models/AbstractTestNode"
 
 export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 	private tree: Array<BaseNode> = []
@@ -113,7 +113,7 @@ export default class JestExplorer implements vscode.TreeDataProvider<BaseNode> {
 			}
 
 			testSuite.assertions.forEach(assertion => {
-				const testNode = this.findChildrenWithLine(this.testTree!, assertion.line) as TestNode
+				const testNode = this.findChildrenWithLine(this.testTree!, assertion.line) as AbstractTestNode
 				if (testNode) {
 					testNode.setStatus(assertion.status)
 					testNode.setTooltip(assertion.message)

@@ -2,7 +2,7 @@
     "name": "jest-typescript-toolbox",
     "displayName": "Jest TypeScript Toolbox",
     "description": "",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "publisher": "svenliebig",
     "author": {
         "email": "liebigsv@gmail.com",
@@ -44,28 +44,32 @@
     "main": "./out/extension",
     "contributes": {
         "commands": [{
-            "command": "jestTypescriptToolbox.reloadTree",
-            "title": "Reload Tree",
-            "category": "jest-typescript-toolbox",
-            "icon": "assets/jest.svg"
-        }, {
-            "command": "jestTypescriptToolbox.findRelatedTest",
-            "title": "Find related test",
-            "category": "jest-typescript-toolbox",
-            "icon": "assets/jest.svg"
-        }],
+                "command": "jestTypescriptToolbox.reloadTree",
+                "title": "Reload Tree",
+                "category": "jest-typescript-toolbox",
+                "icon": "assets/jest.svg"
+            },
+            {
+                "command": "jestTypescriptToolbox.findRelatedTest",
+                "title": "Find related test",
+                "category": "jest-typescript-toolbox",
+                "icon": "assets/jest.svg"
+            }
+        ],
         "menus": {
             "view/item/context": [{
                 "command": "jestTypescriptToolbox.reloadTree",
                 "when": "viewItem == jestExplorerDescribeNode"
             }],
             "commandPalette": [{
-                "command": "jestTypescriptToolbox.findRelatedTest",
-                "when": "resourceLangId == typescript"
-            }, {
-                "command": "jestTypescriptToolbox.findRelatedTest",
-                "when": "resourceLangId == typescriptreact"
-            }]
+                    "command": "jestTypescriptToolbox.findRelatedTest",
+                    "when": "resourceLangId == typescript"
+                },
+                {
+                    "command": "jestTypescriptToolbox.findRelatedTest",
+                    "when": "resourceLangId == typescriptreact"
+                }
+            ]
         },
         "views": {
             "jestView": [{
